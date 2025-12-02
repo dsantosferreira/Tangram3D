@@ -25,6 +25,7 @@
     <ClCompile Include="..\libs\mgl\mglMesh.cpp" />
     <ClCompile Include="..\libs\mgl\mglShader.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="sceneNode.cpp" />
     <ClCompile Include="SphereCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +43,7 @@
     <ClInclude Include="..\libs\mgl\mglMesh.hpp" />
     <ClInclude Include="..\libs\mgl\mglScenegraph.hpp" />
     <ClInclude Include="..\libs\mgl\mglShader.hpp" />
+    <ClInclude Include="sceneNode.hpp" />
     <ClInclude Include="SphereCamera.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
