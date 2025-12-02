@@ -10,9 +10,9 @@
 #define MGL_MESH_HPP
 
 #include <GL/glew.h>
-//#include <assimp/Importer.hpp>
-//#include <assimp/postprocess.h>
-//#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
@@ -84,8 +84,8 @@ private:
   std::vector<unsigned int> Indices;
 
   void clear();
-  //void processScene(const aiScene *scene);
-  //void processMesh(const aiMesh *mesh);
+  void processScene(const aiScene *scene);
+  void processMesh(const aiMesh *mesh);
   void createBufferObjects();
   void destroyBufferObjects();
 };

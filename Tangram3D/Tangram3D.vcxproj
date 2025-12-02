@@ -128,17 +128,18 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)libs\glew\include;$(SolutionDir)libs\glfw\include;$(SolutionDir)libs\glm;$(SolutionDir)libs\mgl</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)libs\glew\include;$(SolutionDir)libs\glfw\include;$(SolutionDir)libs\glm;$(SolutionDir)libs\mgl;$(SolutionDir)libs\assimp\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)libs\glew\lib\Release\x64;$(SolutionDir)libs\glfw\lib-vc2022</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);opengl32.lib;glew32.lib;glfw3dll.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)libs\glew\lib\Release\x64;$(SolutionDir)libs\glfw\lib-vc2022;$(SolutionDir)libs\assimp\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);opengl32.lib;glew32.lib;glfw3dll.lib;assimp-vc143-mt.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y $(SolutionDir)libs\glew\bin\Release\x64\glew32.dll $(OutDir)
-xcopy /y $(SolutionDir)libs\glfw\lib-vc2022\glfw3.dll $(OutDir)</Command>
+xcopy /y $(SolutionDir)libs\glfw\lib-vc2022\glfw3.dll $(OutDir)
+xcopy /y $(SolutionDir)libs\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

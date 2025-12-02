@@ -28,8 +28,10 @@ public:
     void cursorCallback(GLFWwindow* win, double xpos, double ypos) override;
     void mouseButtonCallback(GLFWwindow* win, int button, int action, int mods) override;
     void scrollCallback(GLFWwindow* win, double xoffset, double yoffset) override;
+    void createMeshes();
 
 private:
+    mgl::Mesh* Mesh = nullptr;
     const GLuint POSITION = 0, COLOR = 1, UBO_BP = 0;
     GLuint VaoId;
     float width = 800, height = 600;
@@ -43,10 +45,10 @@ private:
 
     bool rightBtnActive = false;
 
-    std::unique_ptr<mgl::ShaderProgram> Shaders = nullptr;
+    mgl::ShaderProgram* Shaders = nullptr;
     GLint ModelMatrixId;
 
-    void createShaderProgram();
+    void createShaderPrograms();
     void createBufferObjects();
     void createCameras();
     void destroyCameras();
@@ -158,18 +160,39 @@ void MyApp::destroyBufferObjects() {
     glBindVertexArray(0);
 }
 
+///////////////////////////////////////////////////////////////////////// MESHES
+
+void MyApp::createMeshes() {
+    std::string mesh_dir = "../assets/";
+    std::string mesh_file = "bunny-vn-flat.obj";
+    std::string mesh_fullname = mesh_dir + mesh_file;
+
+    Mesh = new mgl::Mesh();
+    Mesh->joinIdenticalVertices();
+    Mesh->create(mesh_fullname);
+}
+
+
 ///////////////////////////////////////////////////////////////////////// SHADER
 
-void MyApp::createShaderProgram() {
-    Shaders = std::make_unique<mgl::ShaderProgram>();
-    Shaders->addShader(GL_VERTEX_SHADER, "color-vs.glsl");
-    Shaders->addShader(GL_FRAGMENT_SHADER, "color-fs.glsl");
+void MyApp::createShaderPrograms() {
+    Shaders = new mgl::ShaderProgram();
+    Shaders->addShader(GL_VERTEX_SHADER, "cube-vs.glsl");
+    Shaders->addShader(GL_FRAGMENT_SHADER, "cube-fs.glsl");
 
-    Shaders->addAttribute(mgl::POSITION_ATTRIBUTE, POSITION);
-    Shaders->addAttribute(mgl::COLOR_ATTRIBUTE, COLOR);
+    Shaders->addAttribute(mgl::POSITION_ATTRIBUTE, mgl::Mesh::POSITION);
+    if (Mesh->hasNormals()) {
+        Shaders->addAttribute(mgl::NORMAL_ATTRIBUTE, mgl::Mesh::NORMAL);
+    }
+    if (Mesh->hasTexcoords()) {
+        Shaders->addAttribute(mgl::TEXCOORD_ATTRIBUTE, mgl::Mesh::TEXCOORD);
+    }
+    if (Mesh->hasTangentsAndBitangents()) {
+        Shaders->addAttribute(mgl::TANGENT_ATTRIBUTE, mgl::Mesh::TANGENT);
+    }
+
     Shaders->addUniform(mgl::MODEL_MATRIX);
     Shaders->addUniformBlock(mgl::CAMERA_BLOCK, UBO_BP);
-
     Shaders->create();
 
     ModelMatrixId = Shaders->Uniforms[mgl::MODEL_MATRIX].index;
@@ -208,23 +231,21 @@ const glm::mat4 ModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f)) * glm
 
 void MyApp::drawScene() {
     cameras[currCamera]->updateView();
-
-    glBindVertexArray(VaoId);
     Shaders->bind();
 
     glUniformMatrix4fv(ModelMatrixId, 1, GL_FALSE, glm::value_ptr(ModelMatrix));
-    glDrawElements(GL_TRIANGLES, sizeof(Indices), GL_UNSIGNED_INT, nullptr);
+    Mesh->draw();
 
     Shaders->unbind();
-    glBindVertexArray(0);
 }
 
 ////////////////////////////////////////////////////////////////////// CALLBACKS
 
 void MyApp::initCallback(GLFWwindow* win) {
     glfwSetCursorPos(win, width / 2, height / 2);
-    createBufferObjects();
-    createShaderProgram();
+    //createBufferObjects();
+    createMeshes();
+    createShaderPrograms();
     createCameras();
 }
 
