@@ -29,8 +29,9 @@ private:
     const GLuint POSITION = 0, COLOR = 1, UBO_BP = 0;
     GLuint VaoId;
 
-    int currCamera = 0;
+    int currCamera = 0, currProjection = 0;
     std::vector<SphereCamera*> cameras;
+    std::vector<glm::mat4> projectionMatrices;
 
     std::unique_ptr<mgl::ShaderProgram> Shaders = nullptr;
     std::unique_ptr<mgl::Camera> Camera = nullptr;
@@ -168,36 +169,38 @@ void MyApp::createShaderProgram() {
 ////////////////////////////////////////////////////////////////////////// CAMERAS
 
 void MyApp::createCameras() {
-    // Eye(0,5,0) Center(0,0,0) Up(0,0,-1)
-    //const glm::mat4 ViewMatrix1 =
-        //glm::lookAt(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-            //glm::vec3(0.0f, 0.0f, -1.0f));
-    const glm::mat4 ViewMatrix1 =
-        glm::lookAt(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-            glm::vec3(0.0f, 1.0f, 0.0f));
     // Orthographic LeftRight(-2,2) BottomTop(-2,2) NearFar(1,10)
     const glm::mat4 ProjectionMatrix1 =
         glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, 5.0f, 15.0f);
 
-    SphereCamera *camera1 = new SphereCamera(UBO_BP);
-    camera1->setViewMatrix(ViewMatrix1);
-    camera1->setProjectionMatrix(ProjectionMatrix1);
+    // Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
+    const glm::mat4 ProjectionMatrix2 =
+        glm::perspective(glm::radians(30.0f), 4.0f / 3.0f, 1.0f, 15.0f);
+
+    projectionMatrices.push_back(ProjectionMatrix1);
+    projectionMatrices.push_back(ProjectionMatrix2);
+
+    const glm::mat4 ViewMatrix1 =
+        glm::lookAt(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.0f, 1.0f, 0.0f));
 
     // Eye(5, 0, 0) Center(0,0,0) Up(0,1,0)
     const glm::mat4 ViewMatrix2 =
         glm::lookAt(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f),
             glm::vec3(0.0f, 1.0f, 0.0f));
 
-    // Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
-    const glm::mat4 ProjectionMatrix2 =
-        glm::perspective(glm::radians(30.0f), 4.0f / 3.0f, 1.0f, 15.0f);
-    SphereCamera *camera2 = new SphereCamera(UBO_BP);
+    SphereCamera *camera1 = new SphereCamera(UBO_BP, projectionMatrices);
+    camera1->setViewMatrix(ViewMatrix1);
+    camera1->setProjectionMatrix(ProjectionMatrix1);
+
+    SphereCamera* camera2 = new SphereCamera(UBO_BP, projectionMatrices);
     camera2->setViewMatrix(ViewMatrix2);
-    camera2->setProjectionMatrix(ProjectionMatrix2);
+    camera2->setProjectionMatrix(ProjectionMatrix1);
 
     cameras.push_back(camera1);
     cameras.push_back(camera2);
-    cameras[0]->bind();
+
+    cameras[currCamera]->bind();
 }
 
 ////////////////////////////////////////////////////////////////////////// SCENE
@@ -205,8 +208,6 @@ void MyApp::createCameras() {
 const glm::mat4 ModelMatrix =
 glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, -0.5f, -0.5f)),
     glm::vec3(2.0f));
-
-glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
 void MyApp::drawScene() {
     glBindVertexArray(VaoId);
@@ -228,12 +229,12 @@ void MyApp::initCallback(GLFWwindow* win) {
 }
 
 void MyApp::keyCallback(GLFWwindow* win, int key, int scancode, int action, int mods) {
-    if (key == GLFW_KEY_C && action == GLFW_PRESS)
-    switch (key) {
-        case GLFW_KEY_C:
-            currCamera = (currCamera + 1) % cameras.size();
-            cameras[currCamera]->bind();
-    };
+    if (key == GLFW_KEY_C && action == GLFW_PRESS) {
+        currCamera = (currCamera + 1) % cameras.size();
+        cameras[currCamera]->bind();
+    } else if (key == GLFW_KEY_P && action == GLFW_PRESS) {
+        cameras[currCamera]->nextProjection();
+    }
 }
 
 void MyApp::windowCloseCallback(GLFWwindow* win) { 

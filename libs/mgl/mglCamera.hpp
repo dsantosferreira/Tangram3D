@@ -12,6 +12,7 @@
 #include <GL/glew.h>
 #include <glm/ext.hpp> // glm::value_prt
 #include <glm/glm.hpp>
+#include <vector>
 
 namespace mgl {
 
