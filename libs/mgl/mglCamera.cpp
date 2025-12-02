@@ -7,13 +7,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "./mglCamera.hpp"
+#include <iostream>
 
 namespace mgl {
 
 ///////////////////////////////////////////////////////////////////////// Camera
 
 Camera::Camera(GLuint bindingpoint)
-    : ViewMatrix(glm::mat4(1.0f)), ProjectionMatrix(glm::mat4(1.0f)) {
+    : bindingPoint(bindingpoint), ViewMatrix(glm::mat4(1.0f)), ProjectionMatrix(glm::mat4(1.0f)) {
   glGenBuffers(1, &UboId);
   glBindBuffer(GL_UNIFORM_BUFFER, UboId);
   glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, 0, GL_STREAM_DRAW);
@@ -48,6 +49,10 @@ void Camera::setProjectionMatrix(const glm::mat4 &projectionmatrix) {
   glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4),
                   glm::value_ptr(ProjectionMatrix));
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void Camera::bind() {
+    glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, UboId);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

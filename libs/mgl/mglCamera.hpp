@@ -22,6 +22,7 @@ class Camera;
 class Camera {
 private:
   GLuint UboId;
+  GLuint bindingPoint;
   glm::mat4 ViewMatrix;
   glm::mat4 ProjectionMatrix;
 
@@ -32,6 +33,7 @@ public:
   void setViewMatrix(const glm::mat4 &viewmatrix);
   glm::mat4 getProjectionMatrix() const;
   void setProjectionMatrix(const glm::mat4 &projectionmatrix);
+  void bind();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

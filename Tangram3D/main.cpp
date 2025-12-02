@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "../mgl/mgl.hpp"
+#include "./SphereCamera.hpp"
 
 ////////////////////////////////////////////////////////////////////////// MYAPP
 
@@ -27,12 +28,17 @@ private:
     const GLuint POSITION = 0, COLOR = 1, UBO_BP = 0;
     GLuint VaoId;
 
+    int currCamera = 0;
+    std::vector<SphereCamera*> cameras;
+
     std::unique_ptr<mgl::ShaderProgram> Shaders = nullptr;
     std::unique_ptr<mgl::Camera> Camera = nullptr;
     GLint ModelMatrixId;
 
     void createShaderProgram();
     void createBufferObjects();
+    void createCameras();
+    void destroyCameras();
     void destroyBufferObjects();
     void drawScene();
 };
@@ -127,6 +133,12 @@ void MyApp::createBufferObjects() {
     glDeleteBuffers(2, boId);
 }
 
+void MyApp::destroyCameras() {
+    for (int i = 0; i < cameras.size(); i++) {
+        delete cameras[i];
+    }
+}
+
 void MyApp::destroyBufferObjects() {
     glBindVertexArray(VaoId);
     glDisableVertexAttribArray(POSITION);
@@ -152,36 +164,52 @@ void MyApp::createShaderProgram() {
     ModelMatrixId = Shaders->Uniforms[mgl::MODEL_MATRIX].index;
 }
 
+////////////////////////////////////////////////////////////////////////// CAMERAS
+
+void MyApp::createCameras() {
+    // Eye(0,5,0) Center(0,0,0) Up(0,0,-1)
+    //const glm::mat4 ViewMatrix1 =
+        //glm::lookAt(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+            //glm::vec3(0.0f, 0.0f, -1.0f));
+    const glm::mat4 ViewMatrix1 =
+        glm::lookAt(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.0f, 1.0f, 0.0f));
+    // Orthographic LeftRight(-2,2) BottomTop(-2,2) NearFar(1,10)
+    const glm::mat4 ProjectionMatrix1 =
+        glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, 5.0f, 15.0f);
+
+    SphereCamera *camera1 = new SphereCamera(UBO_BP);
+    camera1->setViewMatrix(ViewMatrix1);
+    camera1->setProjectionMatrix(ProjectionMatrix1);
+
+    // Eye(5, 0, 0) Center(0,0,0) Up(0,1,0)
+    const glm::mat4 ViewMatrix2 =
+        glm::lookAt(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
+    const glm::mat4 ProjectionMatrix2 =
+        glm::perspective(glm::radians(30.0f), 4.0f / 3.0f, 1.0f, 15.0f);
+    SphereCamera *camera2 = new SphereCamera(UBO_BP);
+    camera2->setViewMatrix(ViewMatrix2);
+    camera2->setProjectionMatrix(ProjectionMatrix2);
+
+    cameras.push_back(camera1);
+    cameras.push_back(camera2);
+    cameras[0]->bind();
+}
+
 ////////////////////////////////////////////////////////////////////////// SCENE
 
 const glm::mat4 ModelMatrix =
 glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, -0.5f, -0.5f)),
     glm::vec3(2.0f));
 
-// Eye(5,5,5) Center(0,0,0) Up(0,1,0)
-const glm::mat4 ViewMatrix1 =
-glm::lookAt(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-    glm::vec3(0.0f, 1.0f, 0.0f));
-
-// Eye(-5,-5,-5) Center(0,0,0) Up(0,1,0)
-const glm::mat4 ViewMatrix2 =
-glm::lookAt(glm::vec3(-5.0f, -5.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-    glm::vec3(0.0f, 1.0f, 0.0f));
-
-// Orthographic LeftRight(-2,2) BottomTop(-2,2) NearFar(1,10)
-const glm::mat4 ProjectionMatrix1 =
-glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, 5.0f, 15.0f);
-
-// Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
-const glm::mat4 ProjectionMatrix2 =
-glm::perspective(glm::radians(30.0f), 4.0f / 3.0f, 1.0f, 15.0f);
-
 glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-void MyApp::drawScene() {
-    Camera->setViewMatrix(ViewMatrix1);
-    Camera->setProjectionMatrix(ProjectionMatrix2);
+int i = 0;
 
+void MyApp::drawScene() {
     glBindVertexArray(VaoId);
     Shaders->bind();
 
@@ -197,10 +225,13 @@ void MyApp::drawScene() {
 void MyApp::initCallback(GLFWwindow* win) {
     createBufferObjects();
     createShaderProgram();
-    Camera = std::make_unique<mgl::Camera>(UBO_BP);
+    createCameras();
 }
 
-void MyApp::windowCloseCallback(GLFWwindow* win) { destroyBufferObjects(); }
+void MyApp::windowCloseCallback(GLFWwindow* win) { 
+    destroyCameras();
+    destroyBufferObjects(); 
+}
 
 void MyApp::windowSizeCallback(GLFWwindow* win, int winx, int winy) {
     glViewport(0, 0, winx, winy);

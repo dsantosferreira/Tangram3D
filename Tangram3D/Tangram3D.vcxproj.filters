@@ -33,6 +33,9 @@
     <ClCompile Include="..\libs\mgl\mglMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SphereCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cube-vs.glsl">
@@ -71,6 +74,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\libs\mgl\mglError.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereCamera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
