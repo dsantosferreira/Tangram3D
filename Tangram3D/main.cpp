@@ -164,7 +164,7 @@ void MyApp::destroyBufferObjects() {
 
 void MyApp::createMeshes() {
     std::string mesh_dir = "../assets/";
-    std::string mesh_file = "bunny-vn-flat.obj";
+    std::string mesh_file = "square_vn.obj";
     std::string mesh_fullname = mesh_dir + mesh_file;
 
     Mesh = new mgl::Mesh();
@@ -204,17 +204,17 @@ void MyApp::createCameras() {
     // Orthographic LeftRight(-2,2) BottomTop(-2,2) NearFar(1,10)
     // Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
     const glm::mat4 OrthoProjection =
-        glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f , 1.0f, 10.0f);
+        glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f , 1.0f, 500.0f);
     const glm::mat4 PerspectiveProjection =
-        glm::perspective(glm::radians(30.0f), width / height, 1.0f, 15.0f);
+        glm::perspective(glm::radians(60.0f), width / height, 1.0f, 500.0f);
 
     projectionMatrices.push_back(OrthoProjection);
     projectionMatrices.push_back(PerspectiveProjection);
 
     currProjection.assign(projectionMatrices.size(), 0);
 
-    SphereCamera *camera1 = new SphereCamera(UBO_BP, glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    SphereCamera *camera2 = new SphereCamera(UBO_BP, glm::vec3(-5.0f, -5.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    SphereCamera *camera1 = new SphereCamera(UBO_BP, glm::vec3(250.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    SphereCamera *camera2 = new SphereCamera(UBO_BP, glm::vec3(0.0f, 0.0f, 250.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     camera1->setProjectionMatrix(projectionMatrices[0]);
     camera2->setProjectionMatrix(projectionMatrices[0]);
