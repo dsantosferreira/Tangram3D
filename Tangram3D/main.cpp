@@ -23,6 +23,7 @@ public:
     void displayCallback(GLFWwindow* win, double elapsed) override;
     void windowCloseCallback(GLFWwindow* win) override;
     void windowSizeCallback(GLFWwindow* win, int width, int height) override;
+    void keyCallback(GLFWwindow* win, int key, int scancode, int action, int mods) override;
 
 private:
     const GLuint POSITION = 0, COLOR = 1, UBO_BP = 0;
@@ -207,8 +208,6 @@ glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, -0.5f, -0.5f)),
 
 glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-int i = 0;
-
 void MyApp::drawScene() {
     glBindVertexArray(VaoId);
     Shaders->bind();
@@ -226,6 +225,15 @@ void MyApp::initCallback(GLFWwindow* win) {
     createBufferObjects();
     createShaderProgram();
     createCameras();
+}
+
+void MyApp::keyCallback(GLFWwindow* win, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_C && action == GLFW_PRESS)
+    switch (key) {
+        case GLFW_KEY_C:
+            currCamera = (currCamera + 1) % cameras.size();
+            cameras[currCamera]->bind();
+    };
 }
 
 void MyApp::windowCloseCallback(GLFWwindow* win) { 
