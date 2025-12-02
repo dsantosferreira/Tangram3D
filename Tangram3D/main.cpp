@@ -44,7 +44,6 @@ private:
     bool rightBtnActive = false;
 
     std::unique_ptr<mgl::ShaderProgram> Shaders = nullptr;
-    std::unique_ptr<mgl::Camera> Camera = nullptr;
     GLint ModelMatrixId;
 
     void createShaderProgram();
@@ -181,13 +180,13 @@ void MyApp::createShaderProgram() {
 void MyApp::createCameras() {
     // Orthographic LeftRight(-2,2) BottomTop(-2,2) NearFar(1,10)
     // Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
-    const glm::mat4 ProjectionMatrix1 =
-        glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, 1.0f, 10.0f);
-    const glm::mat4 ProjectionMatrix2 =
+    const glm::mat4 OrthoProjection =
+        glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f , 1.0f, 10.0f);
+    const glm::mat4 PerspectiveProjection =
         glm::perspective(glm::radians(30.0f), width / height, 1.0f, 15.0f);
 
-    projectionMatrices.push_back(ProjectionMatrix1);
-    projectionMatrices.push_back(ProjectionMatrix2);
+    projectionMatrices.push_back(OrthoProjection);
+    projectionMatrices.push_back(PerspectiveProjection);
 
     currProjection.assign(projectionMatrices.size(), 0);
 
@@ -241,10 +240,11 @@ void MyApp::keyCallback(GLFWwindow* win, int key, int scancode, int action, int 
 
 void MyApp::cursorCallback(GLFWwindow* win, double xpos, double ypos) {
     if (rightBtnActive) {
+        float sensitivity = 0.25f;
         float xdelta = lastXPos - xpos;
         float ydelta = lastYPos - ypos;
-        cameras[currCamera]->addYaw(xdelta);
-        cameras[currCamera]->addPitch(ydelta);
+        cameras[currCamera]->addYaw(xdelta * sensitivity);
+        cameras[currCamera]->addPitch(ydelta * sensitivity);
     }
 
     lastXPos = xpos;
@@ -268,6 +268,10 @@ void MyApp::windowCloseCallback(GLFWwindow* win) {
 
 void MyApp::windowSizeCallback(GLFWwindow* win, int winx, int winy) {
     glViewport(0, 0, winx, winy);
+    //const glm::mat4 PerspectiveProjection = glm::perspective(glm::radians(30.0f), (float)winx / (float)winy, 1.0f, 15.0f);
+    //const glm::mat4 OrthoProjection = glm::ortho(-4.0f * (winx / 800), 4.0f * (winx / 800), -4.0f * (winy / 800), -4.0f * (winy / 800), 1.0f, 10.0f);
+    //projectionMatrices[0] = OrthoProjection;
+    //projectionMatrices[1] = PerspectiveProjection;
 }
 
 void MyApp::displayCallback(GLFWwindow* win, double elapsed) { drawScene(); }
