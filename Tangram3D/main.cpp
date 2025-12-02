@@ -36,6 +36,7 @@ private:
 
     int currCamera = 0;
     std::vector<SphereCamera*> cameras;
+    std::vector<int> currProjection;
     std::vector<glm::mat4> projectionMatrices;
     float lastXPos = width / 2;
     float lastYPos = height / 2;
@@ -180,13 +181,21 @@ void MyApp::createShaderProgram() {
 void MyApp::createCameras() {
     // Orthographic LeftRight(-2,2) BottomTop(-2,2) NearFar(1,10)
     // Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
+    const glm::mat4 ProjectionMatrix1 =
+        glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, 1.0f, 10.0f);
     const glm::mat4 ProjectionMatrix2 =
         glm::perspective(glm::radians(30.0f), width / height, 1.0f, 15.0f);
 
+    projectionMatrices.push_back(ProjectionMatrix1);
     projectionMatrices.push_back(ProjectionMatrix2);
 
-    SphereCamera *camera1 = new SphereCamera(UBO_BP, projectionMatrices, glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    SphereCamera *camera2 = new SphereCamera(UBO_BP, projectionMatrices, glm::vec3(-5.0f, -5.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    currProjection.assign(projectionMatrices.size(), 0);
+
+    SphereCamera *camera1 = new SphereCamera(UBO_BP, glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    SphereCamera *camera2 = new SphereCamera(UBO_BP, glm::vec3(-5.0f, -5.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+    camera1->setProjectionMatrix(projectionMatrices[0]);
+    camera2->setProjectionMatrix(projectionMatrices[0]);
 
     cameras.push_back(camera1);
     cameras.push_back(camera2);
@@ -225,7 +234,8 @@ void MyApp::keyCallback(GLFWwindow* win, int key, int scancode, int action, int 
         currCamera = (currCamera + 1) % cameras.size();
         cameras[currCamera]->bind();
     } else if (key == GLFW_KEY_P && action == GLFW_PRESS) {
-        cameras[currCamera]->nextProjection();
+        currProjection[currCamera] = (currProjection[currCamera] + 1) % projectionMatrices.size();
+        cameras[currCamera]->setProjectionMatrix(projectionMatrices[currProjection[currCamera]]);
     }
 }
 
@@ -244,13 +254,11 @@ void MyApp::cursorCallback(GLFWwindow* win, double xpos, double ypos) {
 void MyApp::mouseButtonCallback(GLFWwindow* win, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_RIGHT) {
         rightBtnActive = action == GLFW_PRESS;
-        std::cout << rightBtnActive << std::endl;
     }
 }
 
 void MyApp::scrollCallback(GLFWwindow* win, double xoffset, double yoffset) {
-    std::cout << "ScrollX: " << xoffset << " to radians " << glm::radians(xoffset) << std::endl;
-    std::cout << "ScrollY: " << yoffset << " to radians " << glm::radians(yoffset) << std::endl;
+    cameras[currCamera]->addZoom(yoffset);
 }
 
 void MyApp::windowCloseCallback(GLFWwindow* win) { 
