@@ -53,7 +53,6 @@ void SphereCamera::addZoom(float zoom) {
 	this->zoom += zoom;
 
 	glm::vec3 view = this->center - this->eye;
-	std::cout << "Curr zoom: " << this->zoom << " " << glm::length(view) << std::endl;
 	if (glm::length(view) - this->zoom > this->maxZoom)
 		this->zoom = glm::length(view) - this->maxZoom;
 
@@ -63,10 +62,4 @@ void SphereCamera::addZoom(float zoom) {
 
 void SphereCamera::setPerspectiveProj(bool perspectiveProj) {
 	this->perspectiveProj = perspectiveProj;
-}
-
-float SphereCamera::getEyePos() {
-	glm::vec3 view = this->center - this->eye;
-	glm::mat4 T = glm::translate(glm::mat4(1.0f), glm::normalize(view) * this->zoom);
-	return glm::length(T * glm::vec4(this->eye, 1.0f));
 }

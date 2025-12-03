@@ -19,7 +19,6 @@ class SphereCamera : public mgl::Camera {
 		void addZoom(float zoom);
 		void updateView();
 		void setPerspectiveProj(bool perspectiveProj);
-		float getEyePos();
 };
 
 #endif // SPHERE_CAMERA_HPP

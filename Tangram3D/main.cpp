@@ -48,7 +48,7 @@ private:
     std::vector<glm::mat4> projectionMatrices;
     float lastXPos = width / 2;
     float lastYPos = height / 2;
-    const float perspectiveNear = 50.0f, perspectiveFar = 400.0f;
+    const float perspectiveNear = 1.0f, perspectiveFar = 500.0f;
 
     bool rightBtnActive = false;
 
@@ -315,10 +315,14 @@ void MyApp::windowCloseCallback(GLFWwindow* win) {
 
 void MyApp::windowSizeCallback(GLFWwindow* win, int winx, int winy) {
     glViewport(0, 0, winx, winy);
-    //const glm::mat4 PerspectiveProjection = glm::perspective(glm::radians(30.0f), (float)winx / (float)winy, 1.0f, 15.0f);
     //const glm::mat4 OrthoProjection = glm::ortho(-4.0f * (winx / 800), 4.0f * (winx / 800), -4.0f * (winy / 800), -4.0f * (winy / 800), 1.0f, 10.0f);
     //projectionMatrices[0] = OrthoProjection;
-    //projectionMatrices[1] = PerspectiveProjection;
+    const glm::mat4 PerspectiveProjection = glm::perspective(glm::radians(60.0f), (float) winx / (float) winy, perspectiveNear, perspectiveFar);
+    projectionMatrices[1] = PerspectiveProjection;
+
+    for (int i = 0; i < cameras.size(); i++) {
+        cameras[i]->setProjectionMatrix(projectionMatrices[currProjection[i]]);
+    }
 }
 
 void MyApp::displayCallback(GLFWwindow* win, double elapsed) { drawScene(); }
