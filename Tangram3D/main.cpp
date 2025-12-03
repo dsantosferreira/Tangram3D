@@ -315,8 +315,8 @@ void MyApp::windowCloseCallback(GLFWwindow* win) {
 
 void MyApp::windowSizeCallback(GLFWwindow* win, int winx, int winy) {
     glViewport(0, 0, winx, winy);
-    //const glm::mat4 OrthoProjection = glm::ortho(-4.0f * (winx / 800), 4.0f * (winx / 800), -4.0f * (winy / 800), -4.0f * (winy / 800), 1.0f, 10.0f);
-    //projectionMatrices[0] = OrthoProjection;
+    const glm::mat4 OrthoProjection = glm::ortho(-100.0f * (float) winx / 800.0f, 100.0f * (float) winx / 800.0f, -100.0f * (float) winy / 600.0f, 100.0f * (float) winy / 600.0f, 120.0f, 500.0f);
+    projectionMatrices[0] = OrthoProjection;
     const glm::mat4 PerspectiveProjection = glm::perspective(glm::radians(60.0f), (float) winx / (float) winy, perspectiveNear, perspectiveFar);
     projectionMatrices[1] = PerspectiveProjection;
 
