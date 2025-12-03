@@ -15,6 +15,7 @@
 #include <iostream>
 #include "../mgl/mgl.hpp"
 #include "./SphereCamera.hpp"
+#include "SceneNode.hpp"
 
 ////////////////////////////////////////////////////////////////////////// MYAPP
 
@@ -29,8 +30,10 @@ public:
     void mouseButtonCallback(GLFWwindow* win, int button, int action, int mods) override;
     void scrollCallback(GLFWwindow* win, double xoffset, double yoffset) override;
     void createMeshes();
+    void createSceneGraph();
 
 private:
+    SceneNode root;
     mgl::Mesh* Mesh = nullptr;
     const GLuint POSITION = 0, COLOR = 1, UBO_BP = 0;
     GLuint VaoId;
@@ -172,6 +175,22 @@ void MyApp::createMeshes() {
     Mesh->create(mesh_fullname);
 }
 
+///////////////////////////////////////////////////////////////////////// SCENE GRAPH
+
+void MyApp::createSceneGraph() {
+    root = SceneNode(Mesh, Shaders);
+
+    // TODO add remaining objects of scenegraph. Example here
+    // LIKELY TO BE REWORKED
+    SceneNode child = SceneNode(Mesh, Shaders);
+
+    child.setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 50.0f, 50.0f)) *
+                         glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+    root.addChild(child);
+
+    root.setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-25.0f, -25.0f, -25.0f)));
+}
+
 
 ///////////////////////////////////////////////////////////////////////// SHADER
 
@@ -231,12 +250,7 @@ const glm::mat4 ModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f)) * glm
 
 void MyApp::drawScene() {
     cameras[currCamera]->updateView();
-    Shaders->bind();
-
-    glUniformMatrix4fv(ModelMatrixId, 1, GL_FALSE, glm::value_ptr(ModelMatrix));
-    Mesh->draw();
-
-    Shaders->unbind();
+    root.draw();
 }
 
 ////////////////////////////////////////////////////////////////////// CALLBACKS
@@ -246,6 +260,7 @@ void MyApp::initCallback(GLFWwindow* win) {
     //createBufferObjects();
     createMeshes();
     createShaderPrograms();
+    createSceneGraph();
     createCameras();
 }
 

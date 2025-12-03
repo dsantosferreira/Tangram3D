@@ -1,9 +1,16 @@
-#include "sceneNode.hpp"
+#include <utility>
 
-SceneNode::SceneNode(mgl::Mesh* mesh = nullptr, glm::vec4* Color = nullptr, std::unique_ptr<mgl::ShaderProgram> Shaders = nullptr) {
+#include "SceneNode.hpp"
+#include <mglConventions.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+SceneNode::SceneNode(mgl::Mesh* mesh, mgl::ShaderProgram* Shaders, glm::vec4 Color) {
 	this->mesh = mesh;
 	this->Color = Color;
-	this->Shaders = std::make_unique<mgl::ShaderProgram>(Shaders);
+	this->Shaders = Shaders;
+	if (Shaders != nullptr) {
+		ModelMatrixId = Shaders->Uniforms[mgl::MODEL_MATRIX].index;
+	}
 
 	// Set default model and world matrices
 	ModelMatrix = glm::mat4(1.0f);
@@ -24,10 +31,35 @@ void SceneNode::setWorldMatrix(glm::mat4 matrix) {
 	}
 }
 
-//TODO add parent to child node
 void SceneNode::addChild(SceneNode node) {
 	children.push_back(node);
+	node.setParent(*this);
 }
 
-//TODO draw
-void SceneNode::draw() {}
+void SceneNode::setParent(SceneNode node) {
+	this->parent = &node;
+}
+
+// TODO figure out how to pass uniforms to children without shaders
+mgl::ShaderProgram* SceneNode::getShaders() {
+	if (Shaders == nullptr) { // If this node has no shaders, get shaders from parent
+		return parent->getShaders();
+	}
+	else {
+		return Shaders;
+	}
+}
+
+void SceneNode::draw() {
+	if (mesh != nullptr) { // If node has a mesh, draw node
+		this->getShaders()->bind();
+
+		glUniformMatrix4fv(ModelMatrixId, 1, GL_FALSE, glm::value_ptr(WorldMatrix * ModelMatrix));
+		mesh->draw();
+
+		this->getShaders()->unbind();
+	}
+	for (auto& child : children) { // Tell all children to draw themselves
+		child.draw();
+	}
+}
