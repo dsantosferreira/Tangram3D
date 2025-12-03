@@ -181,14 +181,19 @@ void MyApp::createSceneGraph() {
     root = SceneNode(Mesh, Shaders);
 
     // TODO add remaining objects of scenegraph. Example here
-    // LIKELY TO BE REWORKED
+    // LIKELY TO BE REWORKED, including changing "createMeshes" in order to load Meshes directly on SceneNode creation
     SceneNode child = SceneNode(Mesh, Shaders);
 
+    // rotate this node 180 degrees around Y and translate by (50.0f, 50.0f, 50.0f),
     child.setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 50.0f, 50.0f)) *
                          glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
     root.addChild(child);
 
+    // translate root node by (-25.0f, -25.0f, -25.0f)
     root.setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-25.0f, -25.0f, -25.0f)));
+
+    // root node translation is applied to all its children through WorldMatrix
+    // In the end the child translates by (25.0f, 25.0f, 25.0f) because the two translations (the one applied directly and the one from root) are combined
 }
 
 
