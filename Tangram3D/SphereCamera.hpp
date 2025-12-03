@@ -10,14 +10,15 @@ class SphereCamera : public mgl::Camera {
 		glm::vec3 up;
 		float yawAngle, pitchAngle;
 		float zoom;
-		int currProjection;
+		bool perspectiveProj;
 	public:
-		SphereCamera(GLuint bindingPoint, glm::vec3 eye, glm::vec3 center, glm::vec3 up);
+		SphereCamera(GLuint bindingPoint, glm::vec3 eye, glm::vec3 center, glm::vec3 up, bool perspectiveProj);
 		void nextProjection();
 		void addYaw(float yaw);
 		void addPitch(float pitch);
 		void addZoom(float zoom);
 		void updateView();
+		void setPerspectiveProj(bool perspectiveProj);
 };
 
 #endif // SPHERE_CAMERA_HPP

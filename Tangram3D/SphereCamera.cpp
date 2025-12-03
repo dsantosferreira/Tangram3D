@@ -1,13 +1,14 @@
 #include "./SphereCamera.hpp"
 #include <iostream>
 
-SphereCamera::SphereCamera(GLuint bindingPoint, glm::vec3 eye, glm::vec3 center, glm::vec3 up) : mgl::Camera(bindingPoint) {
+SphereCamera::SphereCamera(GLuint bindingPoint, glm::vec3 eye, glm::vec3 center, glm::vec3 up, bool perspectiveProj) : mgl::Camera(bindingPoint) {
 	this->eye = eye;
 	this->center = center;
 	this->up = up;
 	this->yawAngle = 0.0f;
 	this->pitchAngle = 0.0f;
 	this->zoom = 0.0f;
+	this->perspectiveProj = perspectiveProj;
 	this->setViewMatrix(glm::lookAt(eye, center, up));
 }
 
@@ -30,16 +31,25 @@ void SphereCamera::updateView() {
 	glm::quat pitchQ = glm::angleAxis(glm::radians(this->pitchAngle), side);
 	glm::quat rot = yawQ * pitchQ;
 
-	this->eye = T * (rot * glm::vec4(this->eye, 1.0f) * glm::inverse(rot));
-	this->up = T * (rot * glm::vec4(this->up, 1.0f) * glm::inverse(rot));
+	this->eye = rot * glm::vec4(this->eye, 1.0f) * glm::inverse(rot);
+	this->up = rot * glm::vec4(this->up, 1.0f) * glm::inverse(rot);
 
-	this->setViewMatrix(glm::lookAt(this->eye, this->center, this->up));
+	// If the camera is using a perspective projection, translate the camera and up vector in the view matrix to zoom
+	if (this->perspectiveProj) {
+		glm::vec3 zoomedEye = T * glm::vec4(this->eye, 1.0f);
+		this->setViewMatrix(glm::lookAt(zoomedEye, this->center, this->up));
+	} else {
+		this->setViewMatrix(glm::lookAt(this->eye, this->center, this->up));
+	}
 
 	this->yawAngle = 0;
 	this->pitchAngle = 0;
-	this->zoom = 0;
 }
 
 void SphereCamera::addZoom(float zoom) {
 	this->zoom += zoom;
+}
+
+void SphereCamera::setPerspectiveProj(bool perspectiveProj) {
+	this->perspectiveProj = perspectiveProj;
 }

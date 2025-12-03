@@ -17,6 +17,9 @@
 #include "./SphereCamera.hpp"
 #include "SceneNode.hpp"
 
+#define ORTH_PROJ 0
+#define PERSPECTIVE_PROJ 1
+
 ////////////////////////////////////////////////////////////////////////// MYAPP
 
 class MyApp : public mgl::App {
@@ -228,7 +231,7 @@ void MyApp::createCameras() {
     // Orthographic LeftRight(-2,2) BottomTop(-2,2) NearFar(1,10)
     // Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
     const glm::mat4 OrthoProjection =
-        glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f , 1.0f, 500.0f);
+        glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f , 120.0f, 500.0f);
     const glm::mat4 PerspectiveProjection =
         glm::perspective(glm::radians(60.0f), width / height, 1.0f, 500.0f);
 
@@ -237,8 +240,8 @@ void MyApp::createCameras() {
 
     currProjection.assign(projectionMatrices.size(), 0);
 
-    SphereCamera *camera1 = new SphereCamera(UBO_BP, glm::vec3(250.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    SphereCamera *camera2 = new SphereCamera(UBO_BP, glm::vec3(0.0f, 0.0f, 250.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    SphereCamera *camera1 = new SphereCamera(UBO_BP, glm::vec3(250.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), false);
+    SphereCamera *camera2 = new SphereCamera(UBO_BP, glm::vec3(0.0f, 0.0f, 250.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), false);
 
     camera1->setProjectionMatrix(projectionMatrices[0]);
     camera2->setProjectionMatrix(projectionMatrices[0]);
@@ -262,7 +265,6 @@ void MyApp::drawScene() {
 
 void MyApp::initCallback(GLFWwindow* win) {
     glfwSetCursorPos(win, width / 2, height / 2);
-    //createBufferObjects();
     createMeshes();
     createShaderPrograms();
     createSceneGraph();
@@ -276,6 +278,7 @@ void MyApp::keyCallback(GLFWwindow* win, int key, int scancode, int action, int 
     } else if (key == GLFW_KEY_P && action == GLFW_PRESS) {
         currProjection[currCamera] = (currProjection[currCamera] + 1) % projectionMatrices.size();
         cameras[currCamera]->setProjectionMatrix(projectionMatrices[currProjection[currCamera]]);
+        cameras[currCamera]->setPerspectiveProj(currProjection[currCamera] == PERSPECTIVE_PROJ);
     }
 }
 
@@ -299,7 +302,9 @@ void MyApp::mouseButtonCallback(GLFWwindow* win, int button, int action, int mod
 }
 
 void MyApp::scrollCallback(GLFWwindow* win, double xoffset, double yoffset) {
-    cameras[currCamera]->addZoom(yoffset);
+    // Only apply zoom when using a perspective projection
+    if (currProjection[currCamera] == PERSPECTIVE_PROJ)
+        cameras[currCamera]->addZoom(yoffset);
 }
 
 void MyApp::windowCloseCallback(GLFWwindow* win) { 
