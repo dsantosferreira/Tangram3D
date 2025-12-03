@@ -48,6 +48,7 @@ private:
     std::vector<glm::mat4> projectionMatrices;
     float lastXPos = width / 2;
     float lastYPos = height / 2;
+    const float perspectiveNear = 50.0f, perspectiveFar = 400.0f;
 
     bool rightBtnActive = false;
 
@@ -233,15 +234,15 @@ void MyApp::createCameras() {
     const glm::mat4 OrthoProjection =
         glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f , 120.0f, 500.0f);
     const glm::mat4 PerspectiveProjection =
-        glm::perspective(glm::radians(60.0f), width / height, 1.0f, 500.0f);
+        glm::perspective(glm::radians(60.0f), width / height, perspectiveNear, perspectiveFar);
 
     projectionMatrices.push_back(OrthoProjection);
     projectionMatrices.push_back(PerspectiveProjection);
 
     currProjection.assign(projectionMatrices.size(), 0);
 
-    SphereCamera *camera1 = new SphereCamera(UBO_BP, glm::vec3(250.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), false);
-    SphereCamera *camera2 = new SphereCamera(UBO_BP, glm::vec3(0.0f, 0.0f, 250.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), false);
+    SphereCamera *camera1 = new SphereCamera(UBO_BP, glm::vec3(250.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), false, perspectiveNear, perspectiveFar);
+    SphereCamera *camera2 = new SphereCamera(UBO_BP, glm::vec3(0.0f, 0.0f, 250.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), false, perspectiveNear, perspectiveFar);
 
     camera1->setProjectionMatrix(projectionMatrices[0]);
     camera2->setProjectionMatrix(projectionMatrices[0]);
