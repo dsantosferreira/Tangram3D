@@ -33,10 +33,9 @@ public:
     void mouseButtonCallback(GLFWwindow* win, int button, int action, int mods) override;
     void scrollCallback(GLFWwindow* win, double xoffset, double yoffset) override;
     void createMeshes();
-    void createSceneGraph();
 
 private:
-    SceneNode root;
+    SceneNode* puzzle, *square, *parallelogram, *sTriangle1, *sTriangle2, *mTriangle, *lTriangle1, *lTriangle2;
     mgl::Mesh* Mesh = nullptr;
     const GLuint POSITION = 0, COLOR = 1, UBO_BP = 0;
     GLuint VaoId;
@@ -58,6 +57,8 @@ private:
     void createShaderPrograms();
     void createBufferObjects();
     void createCameras();
+    mgl::Mesh* getMesh(std::string mesh_dir, std::string mesh_file);
+    void createSceneGraph();
     void destroyCameras();
     void destroyBufferObjects();
     void drawScene();
@@ -179,26 +180,66 @@ void MyApp::createMeshes() {
     Mesh->create(mesh_fullname);
 }
 
+mgl::Mesh* MyApp::getMesh(std::string mesh_dir, std::string mesh_file) {
+    std::string mesh_fullname = mesh_dir + mesh_file;
+
+    mgl::Mesh* mesh = new mgl::Mesh();
+    mesh->joinIdenticalVertices();
+    mesh->create(mesh_fullname);
+    return mesh;
+}
+
 ///////////////////////////////////////////////////////////////////////// SCENE GRAPH
 
 void MyApp::createSceneGraph() {
-    root = SceneNode(Mesh, glm::vec4(0.9f, 0.9f, 0.9f, 1.0f), Shaders);
+    std::string dir = "../assets/";
+    mgl::Mesh* squareMesh = getMesh(dir, "square_vn.obj");
+    mgl::Mesh* sTriangle1Mesh = getMesh(dir, "small_triangle_1_vn.obj");
+    mgl::Mesh* sTriangle2Mesh = getMesh(dir, "small_triangle_2_vn.obj");
+    mgl::Mesh* parallelogramMesh = getMesh(dir, "parallelogram_vn.obj");
+    mgl::Mesh* mTriangleMesh = getMesh(dir, "medium_triangle_vn.obj");
+    mgl::Mesh* lTriangleMesh = getMesh(dir, "large_triangle_vn.obj");
 
-    // TODO add remaining objects of scenegraph. Example here
-    // LIKELY TO BE REWORKED, including changing "createMeshes" in order to load Meshes directly on SceneNode creation
-    SceneNode* child = new SceneNode(Mesh, glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+    // Note: only puzzle has shaders. When draw is called on each piece, they will obtain their parent node's shaders
+    // in this case their parent being puzzle
 
-    root.addChild(child);
+    puzzle = new SceneNode(nullptr, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), Shaders);
+    square = new SceneNode(squareMesh, glm::vec4((34.0 / 255), (171.0 / 255), (36.0 / 255), 1.0f));
+    sTriangle1 = new SceneNode(sTriangle1Mesh, glm::vec4((235.0 / 255), (71.0 / 255), (38.0 / 255), 1.0f));
+    sTriangle2 = new SceneNode(sTriangle2Mesh, glm::vec4((0.0 / 255), (158.0 / 255), (166.0 / 255), 1.0f));
+    parallelogram = new SceneNode(parallelogramMesh, glm::vec4((253.0 / 255), (140.0 / 255), (0.0 / 255), 1.0f));
+    mTriangle = new SceneNode(mTriangleMesh, glm::vec4((109.0 / 255), (59.0 / 255), (191.0 / 255), 1.0f));
+    lTriangle1 = new SceneNode(lTriangleMesh, glm::vec4((205.0 / 255), (14.0 / 255), (102.0 / 255), 1.0f));
+    lTriangle2 = new SceneNode(lTriangleMesh, glm::vec4((15.0 / 255), (130.0 / 255), (242.0 / 255), 1.0f));
 
-    // rotate this node 180 degrees around Y and translate by (50.0f, 50.0f, 50.0f),
-    child->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 50.0f, 50.0f)) *
-                         glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+    puzzle->addChild(square);
+    puzzle->addChild(sTriangle1);
+    puzzle->addChild(sTriangle2);
+    puzzle->addChild(parallelogram);
+    puzzle->addChild(mTriangle);
+    puzzle->addChild(lTriangle1);
+    puzzle->addChild(lTriangle2);
 
-    // translate root node by (-25.0f, -25.0f, -25.0f)
-    root.setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-25.0f, -25.0f, -25.0f)));
+    square->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(22.25f, 0.0f, 0.0f))*
+                           glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
-    // root node translation is applied to all its children through WorldMatrix
-    // In the end the child translates by (25.0f, 25.0f, 25.0f) because the two translations (the one applied directly and the one from root) are combined
+    sTriangle1->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(44.5f, 0.0f, -22.25f)) *
+                               glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+
+    sTriangle2->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 22.25f)) *
+                               glm::rotate(glm::mat4(1.0f), glm::radians(-135.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+
+    parallelogram->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-11.125f, 0.0f, 33.375f)) *
+                                  glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+
+    mTriangle->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(22.25f, 0.0f, 22.25f)) *
+                              glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+
+    lTriangle1->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -44.5f)) *
+                               glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+
+    lTriangle2->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-44.5f, 0.0f, 0.0f)) *
+                               glm::rotate(glm::mat4(1.0f), glm::radians(135.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 }
 
 
@@ -261,7 +302,7 @@ const glm::mat4 ModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f)) * glm
 
 void MyApp::drawScene() {
     cameras[currCamera]->updateView();
-    root.draw();
+    puzzle->draw();
 }
 
 ////////////////////////////////////////////////////////////////////// CALLBACKS
