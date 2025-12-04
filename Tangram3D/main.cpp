@@ -209,8 +209,8 @@ void MyApp::createSceneGraph() {
     sTriangle2 = new SceneNode(sTriangle2Mesh, glm::vec4((0.0 / 255), (158.0 / 255), (166.0 / 255), 1.0f));
     parallelogram = new SceneNode(parallelogramMesh, glm::vec4((253.0 / 255), (140.0 / 255), (0.0 / 255), 1.0f));
     mTriangle = new SceneNode(mTriangleMesh, glm::vec4((109.0 / 255), (59.0 / 255), (191.0 / 255), 1.0f));
-    lTriangle1 = new SceneNode(lTriangleMesh, glm::vec4((205.0 / 255), (14.0 / 255), (102.0 / 255), 1.0f));
-    lTriangle2 = new SceneNode(lTriangleMesh, glm::vec4((15.0 / 255), (130.0 / 255), (242.0 / 255), 1.0f));
+    lTriangle1 = new SceneNode(lTriangleMesh, glm::vec4((15.0 / 255), (130.0 / 255), (242.0 / 255), 1.0f));
+    lTriangle2 = new SceneNode(lTriangleMesh, glm::vec4((205.0 / 255), (14.0 / 255), (102.0 / 255), 1.0f));
 
     puzzle->addChild(square);
     puzzle->addChild(sTriangle1);
