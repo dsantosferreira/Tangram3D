@@ -207,7 +207,7 @@ void MyApp::createSceneGraph() {
 void MyApp::createShaderPrograms() {
     Shaders = new mgl::ShaderProgram();
     Shaders->addShader(GL_VERTEX_SHADER, "cube-vs.glsl");
-    Shaders->addShader(GL_FRAGMENT_SHADER, "test-fs.glsl");
+    Shaders->addShader(GL_FRAGMENT_SHADER, "color-normal-fs.glsl");
 
     Shaders->addAttribute(mgl::POSITION_ATTRIBUTE, mgl::Mesh::POSITION);
     if (Mesh->hasNormals()) {
