@@ -4,13 +4,10 @@
 #include <mglConventions.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-SceneNode::SceneNode(mgl::Mesh* mesh, mgl::ShaderProgram* Shaders, glm::vec4 Color) {
+SceneNode::SceneNode(mgl::Mesh* mesh, glm::vec4 Color, mgl::ShaderProgram* Shaders) {
 	this->mesh = mesh;
 	this->Color = Color;
 	this->Shaders = Shaders;
-	if (Shaders != nullptr) {
-		ModelMatrixId = Shaders->Uniforms[mgl::MODEL_MATRIX].index;
-	}
 
 	// Set default model and world matrices
 	ModelMatrix = glm::mat4(1.0f);
@@ -19,25 +16,25 @@ SceneNode::SceneNode(mgl::Mesh* mesh, mgl::ShaderProgram* Shaders, glm::vec4 Col
 
 void SceneNode::setModelMatrix(glm::mat4 matrix) {
 	ModelMatrix = matrix;
-	for (auto & child : children) {
-		child.setWorldMatrix(matrix); // Update world matrix of all children with this nodes model matrix
+	for (auto& child : children) {
+		child->setWorldMatrix(matrix); // Update world matrix of all children with this nodes model matrix
 	}
 }
 
 void SceneNode::setWorldMatrix(glm::mat4 matrix) {
 	WorldMatrix = matrix;
 	for (auto& child : children) {
-		child.setWorldMatrix(WorldMatrix * matrix); // World matrix of all children depends on world and model matrices of parent
+		child->setWorldMatrix(WorldMatrix * matrix); // World matrix of all children depends on world and model matrices of parent
 	}
 }
 
-void SceneNode::addChild(SceneNode node) {
+void SceneNode::addChild(SceneNode* node) {
 	children.push_back(node);
-	node.setParent(*this);
+	node->setParent(this);
 }
 
-void SceneNode::setParent(SceneNode node) {
-	this->parent = &node;
+void SceneNode::setParent(SceneNode* node) {
+	this->parent = node;
 }
 
 // TODO figure out how to pass uniforms to children without shaders
@@ -52,14 +49,16 @@ mgl::ShaderProgram* SceneNode::getShaders() {
 
 void SceneNode::draw() {
 	if (mesh != nullptr) { // If node has a mesh, draw node
-		this->getShaders()->bind();
+		mgl::ShaderProgram* tempShaders = this->getShaders();
+		tempShaders->bind();
 
-		glUniformMatrix4fv(ModelMatrixId, 1, GL_FALSE, glm::value_ptr(WorldMatrix * ModelMatrix));
+		glUniformMatrix4fv(tempShaders->Uniforms[mgl::MODEL_MATRIX].index, 1, GL_FALSE, glm::value_ptr(WorldMatrix * ModelMatrix));
+		glUniform4fv(tempShaders->Uniforms["Color"].index, 1, glm::value_ptr(this->Color));
 		mesh->draw();
 
-		this->getShaders()->unbind();
+		tempShaders->unbind();
 	}
 	for (auto& child : children) { // Tell all children to draw themselves
-		child.draw();
+		child->draw();
 	}
 }

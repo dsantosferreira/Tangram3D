@@ -33,6 +33,7 @@
     <None Include="color-vs.glsl" />
     <None Include="cube-fs.glsl" />
     <None Include="cube-vs.glsl" />
+    <None Include="color-normal-fs.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\libs\mgl\mgl.hpp" />

@@ -53,6 +53,9 @@
     <None Include="color-vs.glsl">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="color-normal-fs.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\libs\mgl\mglMesh.hpp">

@@ -182,16 +182,17 @@ void MyApp::createMeshes() {
 ///////////////////////////////////////////////////////////////////////// SCENE GRAPH
 
 void MyApp::createSceneGraph() {
-    root = SceneNode(Mesh, Shaders);
+    root = SceneNode(Mesh, glm::vec4(0.9f, 0.9f, 0.9f, 1.0f), Shaders);
 
     // TODO add remaining objects of scenegraph. Example here
     // LIKELY TO BE REWORKED, including changing "createMeshes" in order to load Meshes directly on SceneNode creation
-    SceneNode child = SceneNode(Mesh, Shaders);
+    SceneNode* child = new SceneNode(Mesh, glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+
+    root.addChild(child);
 
     // rotate this node 180 degrees around Y and translate by (50.0f, 50.0f, 50.0f),
-    child.setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 50.0f, 50.0f)) *
+    child->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 50.0f, 50.0f)) *
                          glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-    root.addChild(child);
 
     // translate root node by (-25.0f, -25.0f, -25.0f)
     root.setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-25.0f, -25.0f, -25.0f)));
@@ -206,7 +207,7 @@ void MyApp::createSceneGraph() {
 void MyApp::createShaderPrograms() {
     Shaders = new mgl::ShaderProgram();
     Shaders->addShader(GL_VERTEX_SHADER, "cube-vs.glsl");
-    Shaders->addShader(GL_FRAGMENT_SHADER, "cube-fs.glsl");
+    Shaders->addShader(GL_FRAGMENT_SHADER, "test-fs.glsl");
 
     Shaders->addAttribute(mgl::POSITION_ATTRIBUTE, mgl::Mesh::POSITION);
     if (Mesh->hasNormals()) {
@@ -220,6 +221,7 @@ void MyApp::createShaderPrograms() {
     }
 
     Shaders->addUniform(mgl::MODEL_MATRIX);
+    Shaders->addUniform("Color");
     Shaders->addUniformBlock(mgl::CAMERA_BLOCK, UBO_BP);
     Shaders->create();
 
