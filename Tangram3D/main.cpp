@@ -282,19 +282,21 @@ void MyApp::createCameras() {
 void MyApp::setCurrentPositions() {
     // TODO interpolation
 
-    square->setModelMatrix(squarePosStart * squareAngleStart);
+    square->setModelMatrix(squarePosEnd * squareAngleEnd);
 
-    parallelogram->setModelMatrix(parallelogramPosStart * parallelogramAngleStart);
+    parallelogram->setModelMatrix(parallelogramPosEnd * parallelogramAngleEnd);
 
-    sTriangle1->setModelMatrix(sTriangle1PosStart * sTriangle1AngleStart);
+    sTriangle1->setModelMatrix(sTriangle1PosEnd * sTriangle1AngleEnd);
 
-    sTriangle2->setModelMatrix(sTriangle2PosStart * sTriangle2AngleStart);
+    sTriangle2->setModelMatrix(sTriangle2PosEnd * sTriangle2AngleEnd);
 
-    mTriangle->setModelMatrix(mTrianglePosStart * mTriangleAngleStart);
+    mTriangle->setModelMatrix(mTrianglePosEnd * mTriangleAngleEnd);
 
-    lTriangle1->setModelMatrix(lTriangle1PosStart * lTriangle1AngleStart);
+    lTriangle1->setModelMatrix(lTriangle1PosEnd * lTriangle1AngleEnd);
 
-    lTriangle2->setModelMatrix(lTriangle2PosStart * lTriangle2AngleStart);
+    lTriangle2->setModelMatrix(lTriangle2PosEnd * lTriangle2AngleEnd);
+
+    puzzle->setModelMatrix(puzzleAngleEnd);
 }
 
 ////////////////////////////////////////////////////////////////////////// SCENE
