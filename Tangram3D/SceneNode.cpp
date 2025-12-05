@@ -53,7 +53,7 @@ void SceneNode::draw() {
 		tempShaders->bind();
 
 		glUniformMatrix4fv(tempShaders->Uniforms[mgl::MODEL_MATRIX].index, 1, GL_FALSE, glm::value_ptr(WorldMatrix * ModelMatrix));
-		glUniform4fv(tempShaders->Uniforms["Color"].index, 1, glm::value_ptr(this->Color));
+		glUniform4fv(tempShaders->Uniforms[mgl::COLOR].index, 1, glm::value_ptr(this->Color));
 		mesh->draw();
 
 		tempShaders->unbind();

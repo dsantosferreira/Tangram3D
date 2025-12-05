@@ -243,7 +243,7 @@ void MyApp::createShaderPrograms() {
     }
 
     Shaders->addUniform(mgl::MODEL_MATRIX);
-    Shaders->addUniform("Color");
+    Shaders->addUniform(mgl::COLOR);
     Shaders->addUniformBlock(mgl::CAMERA_BLOCK, UBO_BP);
     Shaders->create();
 
@@ -265,7 +265,7 @@ void MyApp::createCameras() {
 
     currProjection.assign(projectionMatrices.size(), 0);
 
-    SphereCamera *camera1 = new SphereCamera(UBO_BP, glm::vec3(250.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), false, perspectiveNear, perspectiveFar);
+    SphereCamera *camera1 = new SphereCamera(UBO_BP, glm::vec3(0.0f, 250.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), false, perspectiveNear, perspectiveFar);
     SphereCamera *camera2 = new SphereCamera(UBO_BP, glm::vec3(0.0f, 0.0f, 250.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), false, perspectiveNear, perspectiveFar);
 
     camera1->setProjectionMatrix(projectionMatrices[0]);
