@@ -51,7 +51,7 @@ private:
     float lastYPos = height / 2;
     const float perspectiveNear = 1.0f, perspectiveFar = 500.0f;
 
-    bool rightBtnActive = false;
+    bool rightBtnActive = false, leftBtnActive = false;
 
     mgl::ShaderProgram* Shaders = nullptr;
     GLint ModelMatrixId;
@@ -339,6 +339,9 @@ void MyApp::cursorCallback(GLFWwindow* win, double xpos, double ypos) {
         cameras[currCamera]->addYaw(xdelta * sensitivity);
         cameras[currCamera]->addPitch(ydelta * sensitivity);
     }
+    if (leftBtnActive) {
+        std::cout << "You pressed me! :D" << std::endl;
+    }
 
     lastXPos = xpos;
     lastYPos = ypos;
@@ -347,6 +350,9 @@ void MyApp::cursorCallback(GLFWwindow* win, double xpos, double ypos) {
 void MyApp::mouseButtonCallback(GLFWwindow* win, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_RIGHT) {
         rightBtnActive = action == GLFW_PRESS;
+    }
+    else if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        leftBtnActive = action == GLFW_PRESS;
     }
 }
 
