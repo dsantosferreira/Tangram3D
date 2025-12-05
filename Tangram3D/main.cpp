@@ -16,6 +16,7 @@
 #include "../mgl/mgl.hpp"
 #include "./SphereCamera.hpp"
 #include "SceneNode.hpp"
+#include "animation.hpp"
 
 #define ORTH_PROJ 0
 #define PERSPECTIVE_PROJ 1
@@ -59,6 +60,7 @@ private:
     void createCameras();
     mgl::Mesh* getMesh(std::string mesh_dir, std::string mesh_file);
     void createSceneGraph();
+    void setCurrentPositions();
     void destroyCameras();
     void destroyBufferObjects();
     void drawScene();
@@ -194,9 +196,9 @@ mgl::Mesh* MyApp::getMesh(std::string mesh_dir, std::string mesh_file) {
 void MyApp::createSceneGraph() {
     std::string dir = "../assets/";
     mgl::Mesh* squareMesh = getMesh(dir, "square_vn.obj");
+    mgl::Mesh* parallelogramMesh = getMesh(dir, "parallelogram_vn.obj");
     mgl::Mesh* sTriangle1Mesh = getMesh(dir, "small_triangle_1_vn.obj");
     mgl::Mesh* sTriangle2Mesh = getMesh(dir, "small_triangle_2_vn.obj");
-    mgl::Mesh* parallelogramMesh = getMesh(dir, "parallelogram_vn.obj");
     mgl::Mesh* mTriangleMesh = getMesh(dir, "medium_triangle_vn.obj");
     mgl::Mesh* lTriangleMesh = getMesh(dir, "large_triangle_vn.obj");
 
@@ -205,41 +207,20 @@ void MyApp::createSceneGraph() {
 
     puzzle = new SceneNode(nullptr, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), Shaders);
     square = new SceneNode(squareMesh, glm::vec4((34.0 / 255), (171.0 / 255), (36.0 / 255), 1.0f));
-    sTriangle1 = new SceneNode(sTriangle1Mesh, glm::vec4((235.0 / 255), (71.0 / 255), (38.0 / 255), 1.0f));
-    sTriangle2 = new SceneNode(sTriangle2Mesh, glm::vec4((0.0 / 255), (158.0 / 255), (166.0 / 255), 1.0f));
-    parallelogram = new SceneNode(parallelogramMesh, glm::vec4((253.0 / 255), (140.0 / 255), (0.0 / 255), 1.0f));
+    parallelogram = new SceneNode(parallelogramMesh, glm::vec4((230.0 / 255), (140.0 / 255), (25.0 / 255), 1.0f));
+    sTriangle1 = new SceneNode(sTriangle1Mesh, glm::vec4((230.0 / 255), (71.0 / 255), (38.0 / 255), 1.0f));
+    sTriangle2 = new SceneNode(sTriangle2Mesh, glm::vec4((25.0 / 255), (158.0 / 255), (166.0 / 255), 1.0f));
     mTriangle = new SceneNode(mTriangleMesh, glm::vec4((109.0 / 255), (59.0 / 255), (191.0 / 255), 1.0f));
-    lTriangle1 = new SceneNode(lTriangleMesh, glm::vec4((15.0 / 255), (130.0 / 255), (242.0 / 255), 1.0f));
-    lTriangle2 = new SceneNode(lTriangleMesh, glm::vec4((205.0 / 255), (14.0 / 255), (102.0 / 255), 1.0f));
+    lTriangle1 = new SceneNode(lTriangleMesh, glm::vec4((25.0 / 255), (130.0 / 255), (242.0 / 255), 1.0f));
+    lTriangle2 = new SceneNode(lTriangleMesh, glm::vec4((205.0 / 255), (25.0 / 255), (102.0 / 255), 1.0f));
 
     puzzle->addChild(square);
+    puzzle->addChild(parallelogram);
     puzzle->addChild(sTriangle1);
     puzzle->addChild(sTriangle2);
-    puzzle->addChild(parallelogram);
     puzzle->addChild(mTriangle);
     puzzle->addChild(lTriangle1);
     puzzle->addChild(lTriangle2);
-
-    square->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(22.25f, 0.0f, 0.0f))*
-                           glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-
-    sTriangle1->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(44.5f, 0.0f, -22.25f)) *
-                               glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-
-    sTriangle2->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 22.25f)) *
-                               glm::rotate(glm::mat4(1.0f), glm::radians(-135.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-
-    parallelogram->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-11.125f, 0.0f, 33.375f)) *
-                                  glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-
-    mTriangle->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(22.25f, 0.0f, 22.25f)) *
-                              glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-
-    lTriangle1->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -44.5f)) *
-                               glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-
-    lTriangle2->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-44.5f, 0.0f, 0.0f)) *
-                               glm::rotate(glm::mat4(1.0f), glm::radians(135.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 }
 
 
@@ -296,12 +277,33 @@ void MyApp::createCameras() {
     cameras[currCamera]->bind();
 }
 
+////////////////////////////////////////////////////////////////////////// ANIMATION
+
+void MyApp::setCurrentPositions() {
+    // TODO interpolation
+
+    square->setModelMatrix(squarePosStart * squareAngleStart);
+
+    parallelogram->setModelMatrix(parallelogramPosStart * parallelogramAngleStart);
+
+    sTriangle1->setModelMatrix(sTriangle1PosStart * sTriangle1AngleStart);
+
+    sTriangle2->setModelMatrix(sTriangle2PosStart * sTriangle2AngleStart);
+
+    mTriangle->setModelMatrix(mTrianglePosStart * mTriangleAngleStart);
+
+    lTriangle1->setModelMatrix(lTriangle1PosStart * lTriangle1AngleStart);
+
+    lTriangle2->setModelMatrix(lTriangle2PosStart * lTriangle2AngleStart);
+}
+
 ////////////////////////////////////////////////////////////////////////// SCENE
 
 const glm::mat4 ModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f)) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, -0.5f, -0.5f));
 
 void MyApp::drawScene() {
     cameras[currCamera]->updateView();
+    setCurrentPositions();
     puzzle->draw();
 }
 

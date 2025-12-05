@@ -88,5 +88,8 @@
     <ClInclude Include="SceneNode.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="animation.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

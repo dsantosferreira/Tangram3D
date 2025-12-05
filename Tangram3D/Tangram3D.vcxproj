@@ -44,6 +44,7 @@
     <ClInclude Include="..\libs\mgl\mglMesh.hpp" />
     <ClInclude Include="..\libs\mgl\mglScenegraph.hpp" />
     <ClInclude Include="..\libs\mgl\mglShader.hpp" />
+    <ClInclude Include="animation.hpp" />
     <ClInclude Include="SceneNode.hpp" />
     <ClInclude Include="SphereCamera.hpp" />
   </ItemGroup>

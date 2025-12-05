@@ -9,7 +9,7 @@ uniform vec4 Color;
 out vec4 FragmentColor;
 
 vec3 normalColor(void) {
-    return (exNormal * vec3(1.0)) * 0.1;
+    return (exNormal * vec3(1.0)) * (25.0 / 255);
 }
 
 void main(void)
