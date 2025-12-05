@@ -58,7 +58,9 @@ glm::mat4 lTriangle2AngleStart = glm::rotate(I, glm::radians(135.0f), Y);
 glm::mat4 lTriangle2PosEnd = glm::translate(I, glm::vec3(22.25f, 0.0f, -22.25f));
 glm::mat4 lTriangle2AngleEnd = glm::rotate(I, glm::radians(45.0f), Y);
 
+glm::mat4 puzzlePosStart = I;
 glm::mat4 puzzleAngleStart = glm::rotate(I, glm::radians(0.0f), X);
-glm::mat4 puzzleAngleEnd = glm::rotate(I, glm::radians(90.0f), X);
+glm::mat4 puzzlePosEnd = glm::translate(I, glm::vec3(-30.0f, 17.0f, 0.0f));
+glm::mat4 puzzleAngleEnd = glm::rotate(I, glm::radians(-11.5f), Z) * glm::rotate(I, glm::radians(90.0f), X);
 
 #endif

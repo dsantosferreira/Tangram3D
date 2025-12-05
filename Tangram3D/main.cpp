@@ -11,8 +11,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <memory>
-
 #include <iostream>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/matrix_interpolation.hpp"
 #include "../mgl/mgl.hpp"
 #include "./SphereCamera.hpp"
 #include "SceneNode.hpp"
@@ -36,7 +38,7 @@ public:
     void createMeshes();
 
 private:
-    SceneNode* puzzle, *square, *parallelogram, *sTriangle1, *sTriangle2, *mTriangle, *lTriangle1, *lTriangle2;
+    SceneNode* enviroment, *puzzle, *square, *parallelogram, *sTriangle1, *sTriangle2, *mTriangle, *lTriangle1, *lTriangle2;
     mgl::Mesh* Mesh = nullptr;
     const GLuint POSITION = 0, COLOR = 1, UBO_BP = 0;
     GLuint VaoId;
@@ -51,7 +53,8 @@ private:
     float lastYPos = height / 2;
     const float perspectiveNear = 1.0f, perspectiveFar = 500.0f;
 
-    bool rightBtnActive = false, leftBtnActive = false;
+    bool rightBtnActive = false, leftBtnActive = false, rightArrowActive = false, leftArrowActive = false;
+    double deltaT = 0.0f;
 
     mgl::ShaderProgram* Shaders = nullptr;
     GLint ModelMatrixId;
@@ -61,10 +64,10 @@ private:
     void createCameras();
     mgl::Mesh* getMesh(std::string mesh_dir, std::string mesh_file);
     void createSceneGraph();
-    void setCurrentPositions();
+    void setCurrentPositions(double elapsed);
     void destroyCameras();
     void destroyBufferObjects();
-    void drawScene();
+    void drawScene(double elapsed);
 };
 
 ////////////////////////////////////////////////////////////////// VAO, VBO, EBO
@@ -196,6 +199,7 @@ mgl::Mesh* MyApp::getMesh(std::string mesh_dir, std::string mesh_file) {
 
 void MyApp::createSceneGraph() {
     std::string dir = "../assets/";
+    mgl::Mesh* enviromentMesh = getMesh(dir, "enviroment_vn.obj");
     mgl::Mesh* squareMesh = getMesh(dir, "square_vn.obj");
     mgl::Mesh* parallelogramMesh = getMesh(dir, "parallelogram_vn.obj");
     mgl::Mesh* sTriangle1Mesh = getMesh(dir, "small_triangle_1_vn.obj");
@@ -203,10 +207,11 @@ void MyApp::createSceneGraph() {
     mgl::Mesh* mTriangleMesh = getMesh(dir, "medium_triangle_vn.obj");
     mgl::Mesh* lTriangleMesh = getMesh(dir, "large_triangle_vn.obj");
 
-    // Note: only puzzle has shaders. When draw is called on each piece, they will obtain their parent node's shaders
-    // in this case their parent being puzzle
+    // Note: only enviroment has shaders. When draw is called on each piece, they will obtain their parent node's shaders
+    // in this case their parent is puzzle, which will then obtain the shaders of its parent, which is enviroment
 
-    puzzle = new SceneNode(nullptr, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), Shaders);
+    enviroment = new SceneNode(enviromentMesh, glm::vec4((25.0 / 255), (25.0 / 255), (25.0 / 255), 1.0f), Shaders);
+    puzzle = new SceneNode();
     square = new SceneNode(squareMesh, glm::vec4((34.0 / 255), (171.0 / 255), (36.0 / 255), 1.0f));
     parallelogram = new SceneNode(parallelogramMesh, glm::vec4((230.0 / 255), (140.0 / 255), (25.0 / 255), 1.0f));
     sTriangle1 = new SceneNode(sTriangle1Mesh, glm::vec4((230.0 / 255), (71.0 / 255), (38.0 / 255), 1.0f));
@@ -215,6 +220,7 @@ void MyApp::createSceneGraph() {
     lTriangle1 = new SceneNode(lTriangleMesh, glm::vec4((25.0 / 255), (130.0 / 255), (242.0 / 255), 1.0f));
     lTriangle2 = new SceneNode(lTriangleMesh, glm::vec4((205.0 / 255), (25.0 / 255), (102.0 / 255), 1.0f));
 
+    enviroment->addChild(puzzle);
     puzzle->addChild(square);
     puzzle->addChild(parallelogram);
     puzzle->addChild(sTriangle1);
@@ -280,34 +286,42 @@ void MyApp::createCameras() {
 
 ////////////////////////////////////////////////////////////////////////// ANIMATION
 
-void MyApp::setCurrentPositions() {
-    // TODO interpolation
+void MyApp::setCurrentPositions(double elapsed) {
+    if (leftArrowActive ^ rightArrowActive) { // Only change animation deltaT if one key is pressed, both pressed cancel out
+        if (rightArrowActive) {
+            deltaT = std::min(1.0, deltaT + elapsed);
+        }
+        else {
+            deltaT = std::max(0.0, deltaT - elapsed);
+        }
+        std::cout << deltaT << std::endl;
+    }
 
-    square->setModelMatrix(squarePosStart * squareAngleStart);
+    square->setModelMatrix(glm::interpolate(squarePosStart * squareAngleStart, squarePosEnd * squareAngleEnd, (float)deltaT));
 
-    parallelogram->setModelMatrix(parallelogramPosStart * parallelogramAngleStart);
+    parallelogram->setModelMatrix(glm::interpolate(parallelogramPosStart * parallelogramAngleStart, parallelogramPosEnd * parallelogramAngleEnd, (float)deltaT));
 
-    sTriangle1->setModelMatrix(sTriangle1PosStart * sTriangle1AngleStart);
+    sTriangle1->setModelMatrix(glm::interpolate(sTriangle1PosStart * sTriangle1AngleStart, sTriangle1PosEnd * sTriangle1AngleEnd, (float)deltaT));
 
-    sTriangle2->setModelMatrix(sTriangle2PosStart * sTriangle2AngleStart);
+    sTriangle2->setModelMatrix(glm::interpolate(sTriangle2PosStart * sTriangle2AngleStart, sTriangle2PosEnd * sTriangle2AngleEnd, (float)deltaT));
 
-    mTriangle->setModelMatrix(mTrianglePosStart * mTriangleAngleStart);
+    mTriangle->setModelMatrix(glm::interpolate(mTrianglePosStart * mTriangleAngleStart, mTrianglePosEnd * mTriangleAngleEnd, (float)deltaT));
 
-    lTriangle1->setModelMatrix(lTriangle1PosStart * lTriangle1AngleStart);
+    lTriangle1->setModelMatrix(glm::interpolate(lTriangle1PosStart * lTriangle1AngleStart, lTriangle1PosEnd * lTriangle1AngleEnd, (float)deltaT));
 
-    lTriangle2->setModelMatrix(lTriangle2PosStart * lTriangle2AngleStart);
+    lTriangle2->setModelMatrix(glm::interpolate(lTriangle2PosStart * lTriangle2AngleStart, lTriangle2PosEnd * lTriangle2AngleEnd, (float)deltaT));
 
-    puzzle->setModelMatrix(puzzleAngleStart);
+    puzzle->setModelMatrix(glm::interpolate(puzzlePosStart * puzzleAngleStart, puzzlePosEnd * puzzleAngleEnd, (float)deltaT));
 }
 
 ////////////////////////////////////////////////////////////////////////// SCENE
 
 const glm::mat4 ModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f)) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, -0.5f, -0.5f));
 
-void MyApp::drawScene() {
+void MyApp::drawScene(double elapsed) {
     cameras[currCamera]->updateView();
-    setCurrentPositions();
-    puzzle->draw();
+    setCurrentPositions(elapsed);
+    enviroment->draw();
 }
 
 ////////////////////////////////////////////////////////////////////// CALLBACKS
@@ -329,6 +343,21 @@ void MyApp::keyCallback(GLFWwindow* win, int key, int scancode, int action, int 
         cameras[currCamera]->setProjectionMatrix(projectionMatrices[currProjection[currCamera]]);
         cameras[currCamera]->setPerspectiveProj(currProjection[currCamera] == PERSPECTIVE_PROJ);
     }
+    
+    if (key == GLFW_KEY_LEFT) {
+        if (action == GLFW_PRESS) {
+            leftArrowActive = true;
+        } else if (action == GLFW_RELEASE) {
+            leftArrowActive = false;
+        }
+    } else if (key == GLFW_KEY_RIGHT) {
+        if (action == GLFW_PRESS) {
+            rightArrowActive = true;
+        }
+        else if (action == GLFW_RELEASE) {
+            rightArrowActive = false;
+        }
+    }
 }
 
 void MyApp::cursorCallback(GLFWwindow* win, double xpos, double ypos) {
@@ -340,7 +369,7 @@ void MyApp::cursorCallback(GLFWwindow* win, double xpos, double ypos) {
         cameras[currCamera]->addPitch(ydelta * sensitivity);
     }
     if (leftBtnActive) {
-        std::cout << "You pressed me! :D" << std::endl;
+        std::cout << "Moved with left mouse button" << std::endl;
     }
 
     lastXPos = xpos;
@@ -384,7 +413,7 @@ void MyApp::windowSizeCallback(GLFWwindow* win, int winx, int winy) {
     }
 }
 
-void MyApp::displayCallback(GLFWwindow* win, double elapsed) { drawScene(); }
+void MyApp::displayCallback(GLFWwindow* win, double elapsed) { drawScene(elapsed); }
 
 /////////////////////////////////////////////////////////////////////////// MAIN
 
