@@ -352,8 +352,10 @@ void MyApp::mouseButtonCallback(GLFWwindow* win, int button, int action, int mod
 
 void MyApp::scrollCallback(GLFWwindow* win, double xoffset, double yoffset) {
     // Only apply zoom when using a perspective projection
-    if (currProjection[currCamera] == PERSPECTIVE_PROJ)
-        cameras[currCamera]->addZoom(yoffset);
+    if (currProjection[currCamera] == PERSPECTIVE_PROJ) {
+        float sensitivity = 10.0f;
+        cameras[currCamera]->addZoom(yoffset * sensitivity);
+    }
 }
 
 void MyApp::windowCloseCallback(GLFWwindow* win) { 
