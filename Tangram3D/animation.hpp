@@ -21,25 +21,25 @@ glm::vec3 X = glm::vec3(1.0f, 0.0f, 0.0f);
 glm::vec3 Y = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::vec3 Z = glm::vec3(0.0f, 0.0f, 1.0f);
 
-glm::mat4 squarePosStart = glm::translate(I, glm::vec3(22.25f, 0.0f, 0.0f) * 2.0f);
+glm::mat4 squarePosStart = glm::translate(I, glm::vec3(22.25f, 0.0f, 0.0f));
 glm::mat4 squareAngleStart = glm::rotate(I, glm::radians(-45.0f), Y);
 
-glm::mat4 parallelogramPosStart = glm::translate(I, glm::vec3(-11.125f, 0.0f, 33.375f) * 2.0f);
+glm::mat4 parallelogramPosStart = glm::translate(I, glm::vec3(-11.125f, 0.0f, 33.375f));
 glm::mat4 parallelogramAngleStart = glm::rotate(I, glm::radians(180.0f), Y);
 
-glm::mat4 sTriangle1PosStart = glm::translate(I, glm::vec3(44.5f, 0.0f, -22.25f) * 2.0f);
+glm::mat4 sTriangle1PosStart = glm::translate(I, glm::vec3(44.5f, 0.0f, -22.25f));
 glm::mat4 sTriangle1AngleStart = glm::rotate(I, glm::radians(-45.0f), Y);
 
-glm::mat4 sTriangle2PosStart = glm::translate(I, glm::vec3(0.0f, 0.0f, 22.25f) * 2.0f);
+glm::mat4 sTriangle2PosStart = glm::translate(I, glm::vec3(0.0f, 0.0f, 22.25f));
 glm::mat4 sTriangle2AngleStart = glm::rotate(I, glm::radians(-135.0f), Y);
 
-glm::mat4 mTrianglePosStart = glm::translate(I, glm::vec3(22.25f, 0.0f, 22.25f) * 2.0f);
+glm::mat4 mTrianglePosStart = glm::translate(I, glm::vec3(22.25f, 0.0f, 22.25f));
 glm::mat4 mTriangleAngleStart = glm::rotate(I, glm::radians(90.0f), Y);
 
-glm::mat4 lTriangle1PosStart = glm::translate(I, glm::vec3(0.0f, 0.0f, -44.5f) * 2.0f);
+glm::mat4 lTriangle1PosStart = glm::translate(I, glm::vec3(0.0f, 0.0f, -44.5f));
 glm::mat4 lTriangle1AngleStart = glm::rotate(I, glm::radians(45.0f), Y);
 
-glm::mat4 lTriangle2PosStart = glm::translate(I, glm::vec3(-44.5f, 0.0f, 0.0f) * 2.0f);
+glm::mat4 lTriangle2PosStart = glm::translate(I, glm::vec3(-44.5f, 0.0f, 0.0f));
 glm::mat4 lTriangle2AngleStart = glm::rotate(I, glm::radians(135.0f), Y);
 
 glm::mat4 puzzleAngleStart = glm::rotate(I, glm::radians(0.0f), X);
