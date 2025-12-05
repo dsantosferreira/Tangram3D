@@ -41,6 +41,7 @@ private:
     const GLuint POSITION = 0, COLOR = 1, UBO_BP = 0;
     GLuint VaoId;
     float width = 800, height = 600;
+    float defaultWidthHeight = 600.0f;
 
     int currCamera = 0;
     std::vector<SphereCamera*> cameras;
@@ -256,7 +257,7 @@ void MyApp::createCameras() {
     // Orthographic LeftRight(-2,2) BottomTop(-2,2) NearFar(1,10)
     // Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
     const glm::mat4 OrthoProjection =
-        glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f , 120.0f, 500.0f);
+        glm::ortho(-100.0f * width/defaultWidthHeight, 100.0f * width/defaultWidthHeight, -100.0f * height/ defaultWidthHeight, 100.0f * height/ defaultWidthHeight, 120.0f, 500.0f);
     const glm::mat4 PerspectiveProjection =
         glm::perspective(glm::radians(60.0f), width / height, perspectiveNear, perspectiveFar);
 
@@ -282,21 +283,21 @@ void MyApp::createCameras() {
 void MyApp::setCurrentPositions() {
     // TODO interpolation
 
-    square->setModelMatrix(squarePosEnd * squareAngleEnd);
+    square->setModelMatrix(squarePosStart * squareAngleStart);
 
-    parallelogram->setModelMatrix(parallelogramPosEnd * parallelogramAngleEnd);
+    parallelogram->setModelMatrix(parallelogramPosStart * parallelogramAngleStart);
 
-    sTriangle1->setModelMatrix(sTriangle1PosEnd * sTriangle1AngleEnd);
+    sTriangle1->setModelMatrix(sTriangle1PosStart * sTriangle1AngleStart);
 
-    sTriangle2->setModelMatrix(sTriangle2PosEnd * sTriangle2AngleEnd);
+    sTriangle2->setModelMatrix(sTriangle2PosStart * sTriangle2AngleStart);
 
-    mTriangle->setModelMatrix(mTrianglePosEnd * mTriangleAngleEnd);
+    mTriangle->setModelMatrix(mTrianglePosStart * mTriangleAngleStart);
 
-    lTriangle1->setModelMatrix(lTriangle1PosEnd * lTriangle1AngleEnd);
+    lTriangle1->setModelMatrix(lTriangle1PosStart * lTriangle1AngleStart);
 
-    lTriangle2->setModelMatrix(lTriangle2PosEnd * lTriangle2AngleEnd);
+    lTriangle2->setModelMatrix(lTriangle2PosStart * lTriangle2AngleStart);
 
-    puzzle->setModelMatrix(puzzleAngleEnd);
+    puzzle->setModelMatrix(puzzleAngleStart);
 }
 
 ////////////////////////////////////////////////////////////////////////// SCENE
@@ -362,7 +363,10 @@ void MyApp::windowCloseCallback(GLFWwindow* win) {
 
 void MyApp::windowSizeCallback(GLFWwindow* win, int winx, int winy) {
     glViewport(0, 0, winx, winy);
-    const glm::mat4 OrthoProjection = glm::ortho(-100.0f * (float) winx / 800.0f, 100.0f * (float) winx / 800.0f, -100.0f * (float) winy / 600.0f, 100.0f * (float) winy / 600.0f, 120.0f, 500.0f);
+    const glm::mat4 OrthoProjection = glm::ortho(-100.0f * (float) winx / defaultWidthHeight,
+                                                 100.0f * (float) winx / defaultWidthHeight,
+                                                 -100.0f * (float) winy / defaultWidthHeight,
+                                                 100.0f * (float) winy / defaultWidthHeight, 120.0f, 500.0f);
     projectionMatrices[0] = OrthoProjection;
     const glm::mat4 PerspectiveProjection = glm::perspective(glm::radians(60.0f), (float) winx / (float) winy, perspectiveNear, perspectiveFar);
     projectionMatrices[1] = PerspectiveProjection;
