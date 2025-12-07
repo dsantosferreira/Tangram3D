@@ -201,7 +201,7 @@ mgl::Mesh* MyApp::getMesh(std::string mesh_dir, std::string mesh_file) {
 
 void MyApp::createSceneGraph() {
     std::string dir = "../assets/";
-    mgl::Mesh* enviromentMesh = getMesh(dir, "square_vn.obj");
+    mgl::Mesh* enviromentMesh = getMesh(dir, "enviroment_vn.obj");
     mgl::Mesh* squareMesh = getMesh(dir, "square_vn.obj");
     mgl::Mesh* parallelogramMesh = getMesh(dir, "parallelogram_vn.obj");
     mgl::Mesh* sTriangle1Mesh = getMesh(dir, "small_triangle_1_vn.obj");
