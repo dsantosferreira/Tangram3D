@@ -51,6 +51,8 @@ private:
     std::vector<glm::mat4> projectionMatrices;
     float lastXPos = width / 2;
     float lastYPos = height / 2;
+    glm::vec3 environmentPos = glm::vec3(0.0f);
+    float worldHorizontalDelta = 0.0f, worldVerticalDelta = 0.0f;
     const float perspectiveNear = 1.0f, perspectiveFar = 500.0f;
 
     bool rightBtnActive = false, leftBtnActive = false, rightArrowActive = false, leftArrowActive = false;
@@ -199,7 +201,7 @@ mgl::Mesh* MyApp::getMesh(std::string mesh_dir, std::string mesh_file) {
 
 void MyApp::createSceneGraph() {
     std::string dir = "../assets/";
-    mgl::Mesh* enviromentMesh = getMesh(dir, "enviroment_vn.obj");
+    mgl::Mesh* enviromentMesh = getMesh(dir, "square_vn.obj");
     mgl::Mesh* squareMesh = getMesh(dir, "square_vn.obj");
     mgl::Mesh* parallelogramMesh = getMesh(dir, "parallelogram_vn.obj");
     mgl::Mesh* sTriangle1Mesh = getMesh(dir, "small_triangle_1_vn.obj");
@@ -312,6 +314,14 @@ void MyApp::setCurrentPositions(double elapsed) {
     lTriangle2->setModelMatrix(glm::interpolate(lTriangle2PosStart * lTriangle2AngleStart, lTriangle2PosEnd * lTriangle2AngleEnd, (float)deltaT));
 
     puzzle->setModelMatrix(glm::interpolate(puzzlePosStart * puzzleAngleStart, puzzlePosEnd * puzzleAngleEnd, (float)deltaT));
+
+    // Calculate translation of the environment
+    environmentPos += -cameras[currCamera]->getSideVector() * worldHorizontalDelta + cameras[currCamera]->getViewVector() * worldVerticalDelta;
+    glm::mat4 T = glm::translate(glm::mat4(1.0f), environmentPos);
+    enviroment->setWorldMatrix(T);
+
+    worldHorizontalDelta = 0.0f;
+    worldVerticalDelta = 0.0f;
 }
 
 ////////////////////////////////////////////////////////////////////////// SCENE
@@ -361,15 +371,18 @@ void MyApp::keyCallback(GLFWwindow* win, int key, int scancode, int action, int 
 }
 
 void MyApp::cursorCallback(GLFWwindow* win, double xpos, double ypos) {
+    float xdelta = lastXPos - xpos;
+    float ydelta = lastYPos - ypos;
+    
     if (rightBtnActive) {
         float sensitivity = 0.25f;
-        float xdelta = lastXPos - xpos;
-        float ydelta = lastYPos - ypos;
         cameras[currCamera]->addYaw(xdelta * sensitivity);
         cameras[currCamera]->addPitch(ydelta * sensitivity);
     }
     if (leftBtnActive) {
-        std::cout << "Moved with left mouse button" << std::endl;
+        float sensitivity = 0.25f;
+        worldHorizontalDelta += sensitivity * xdelta;
+        worldVerticalDelta += sensitivity * ydelta;
     }
 
     lastXPos = xpos;

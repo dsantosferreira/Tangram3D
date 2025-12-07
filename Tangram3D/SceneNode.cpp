@@ -24,7 +24,7 @@ void SceneNode::setModelMatrix(glm::mat4 matrix) {
 void SceneNode::setWorldMatrix(glm::mat4 matrix) {
 	WorldMatrix = matrix;
 	for (auto& child : children) {
-		child->setWorldMatrix(WorldMatrix * matrix); // World matrix of all children depends on world and model matrices of parent
+		child->setWorldMatrix(matrix); // World matrix of all children depends on world and model matrices of parent
 	}
 }
 

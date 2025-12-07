@@ -63,3 +63,11 @@ void SphereCamera::addZoom(float zoom) {
 void SphereCamera::setPerspectiveProj(bool perspectiveProj) {
 	this->perspectiveProj = perspectiveProj;
 }
+
+glm::vec3 SphereCamera::getViewVector() const {
+	return glm::normalize(this->center - this->eye);
+}
+
+glm::vec3 SphereCamera::getSideVector() const {
+	return glm::normalize(glm::cross(getViewVector(), this->up));
+}

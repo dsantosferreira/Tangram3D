@@ -19,6 +19,8 @@ class SphereCamera : public mgl::Camera {
 		void addZoom(float zoom);
 		void updateView();
 		void setPerspectiveProj(bool perspectiveProj);
+		glm::vec3 getViewVector() const;
+		glm::vec3 getSideVector() const;
 };
 
 #endif // SPHERE_CAMERA_HPP
