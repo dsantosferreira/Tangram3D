@@ -37,7 +37,6 @@ void SceneNode::setParent(SceneNode* node) {
 	this->parent = node;
 }
 
-// TODO figure out how to pass uniforms to children without shaders
 mgl::ShaderProgram* SceneNode::getShaders() {
 	if (Shaders == nullptr) { // If this node has no shaders, get shaders from parent
 		return parent->getShaders();

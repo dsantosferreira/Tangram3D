@@ -35,15 +35,12 @@ public:
     void cursorCallback(GLFWwindow* win, double xpos, double ypos) override;
     void mouseButtonCallback(GLFWwindow* win, int button, int action, int mods) override;
     void scrollCallback(GLFWwindow* win, double xoffset, double yoffset) override;
-    void createMeshes();
 
 private:
     SceneNode* enviroment, *puzzle, *square, *parallelogram, *sTriangle1, *sTriangle2, *mTriangle, *lTriangle1, *lTriangle2;
-    mgl::Mesh* Mesh = nullptr;
     const GLuint POSITION = 0, COLOR = 1, UBO_BP = 0;
-    GLuint VaoId;
     float width = 800, height = 600;
-    float defaultWidthHeight = 600.0f;
+    float defaultSize = 600.0f;
 
     int currCamera = 0;
     std::vector<SphereCamera*> cameras;
@@ -59,7 +56,6 @@ private:
     double deltaT = 0.0f;
 
     mgl::ShaderProgram* Shaders = nullptr;
-    GLint ModelMatrixId;
 
     void createShaderPrograms();
     void createCameras();
@@ -71,16 +67,6 @@ private:
 };
 
 ///////////////////////////////////////////////////////////////////////// MESHES
-
-void MyApp::createMeshes() {
-    std::string mesh_dir = "../assets/";
-    std::string mesh_file = "square_vn.obj";
-    std::string mesh_fullname = mesh_dir + mesh_file;
-
-    Mesh = new mgl::Mesh();
-    Mesh->joinIdenticalVertices();
-    Mesh->create(mesh_fullname);
-}
 
 mgl::Mesh* MyApp::getMesh(std::string mesh_dir, std::string mesh_file) {
     std::string mesh_fullname = mesh_dir + mesh_file;
@@ -128,22 +114,12 @@ void MyApp::createShaderPrograms() {
     Shaders->addShader(GL_FRAGMENT_SHADER, "color-normal-fs.glsl");
 
     Shaders->addAttribute(mgl::POSITION_ATTRIBUTE, mgl::Mesh::POSITION);
-    if (Mesh->hasNormals()) {
-        Shaders->addAttribute(mgl::NORMAL_ATTRIBUTE, mgl::Mesh::NORMAL);
-    }
-    if (Mesh->hasTexcoords()) {
-        Shaders->addAttribute(mgl::TEXCOORD_ATTRIBUTE, mgl::Mesh::TEXCOORD);
-    }
-    if (Mesh->hasTangentsAndBitangents()) {
-        Shaders->addAttribute(mgl::TANGENT_ATTRIBUTE, mgl::Mesh::TANGENT);
-    }
+    Shaders->addAttribute(mgl::NORMAL_ATTRIBUTE, mgl::Mesh::NORMAL);
 
     Shaders->addUniform(mgl::MODEL_MATRIX);
     Shaders->addUniform(mgl::COLOR);
     Shaders->addUniformBlock(mgl::CAMERA_BLOCK, UBO_BP);
     Shaders->create();
-
-    ModelMatrixId = Shaders->Uniforms[mgl::MODEL_MATRIX].index;
 }
 
 ////////////////////////////////////////////////////////////////////////// CAMERAS
@@ -152,7 +128,7 @@ void MyApp::createCameras() {
     // Orthographic LeftRight(-2,2) BottomTop(-2,2) NearFar(1,10)
     // Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
     const glm::mat4 OrthoProjection =
-        glm::ortho(-100.0f * width/defaultWidthHeight, 100.0f * width/defaultWidthHeight, -100.0f * height/ defaultWidthHeight, 100.0f * height/ defaultWidthHeight, 120.0f, 500.0f);
+        glm::ortho(-100.0f * width/defaultSize, 100.0f * width/defaultSize, -100.0f * height/ defaultSize, 100.0f * height/ defaultSize, 100.0f, 500.0f);
     const glm::mat4 PerspectiveProjection =
         glm::perspective(glm::radians(60.0f), width / height, perspectiveNear, perspectiveFar);
 
@@ -228,7 +204,6 @@ void MyApp::drawScene(double elapsed) {
 
 void MyApp::initCallback(GLFWwindow* win) {
     glfwSetCursorPos(win, width / 2, height / 2);
-    createMeshes();
     createShaderPrograms();
     createSceneGraph();
     createCameras();
@@ -302,10 +277,10 @@ void MyApp::windowCloseCallback(GLFWwindow* win) {
 
 void MyApp::windowSizeCallback(GLFWwindow* win, int winx, int winy) {
     glViewport(0, 0, winx, winy);
-    const glm::mat4 OrthoProjection = glm::ortho(-100.0f * (float) winx / defaultWidthHeight,
-                                                 100.0f * (float) winx / defaultWidthHeight,
-                                                 -100.0f * (float) winy / defaultWidthHeight,
-                                                 100.0f * (float) winy / defaultWidthHeight, 120.0f, 500.0f);
+    const glm::mat4 OrthoProjection = glm::ortho(-100.0f * (float) winx / defaultSize,
+                                                 100.0f * (float) winx / defaultSize,
+                                                 -100.0f * (float) winy / defaultSize,
+                                                 100.0f * (float) winy / defaultSize, 120.0f, 500.0f);
     projectionMatrices[0] = OrthoProjection;
     const glm::mat4 PerspectiveProjection = glm::perspective(glm::radians(60.0f), (float) winx / (float) winy, perspectiveNear, perspectiveFar);
     projectionMatrices[1] = PerspectiveProjection;
