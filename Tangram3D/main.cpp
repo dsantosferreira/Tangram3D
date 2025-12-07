@@ -95,26 +95,19 @@ mgl::Mesh* MyApp::getMesh(std::string mesh_dir, std::string mesh_file) {
 
 void MyApp::createSceneGraph() {
     std::string dir = "../assets/";
-    mgl::Mesh* enviromentMesh = getMesh(dir, "enviroment_vn.obj");
-    mgl::Mesh* squareMesh = getMesh(dir, "square_vn.obj");
-    mgl::Mesh* parallelogramMesh = getMesh(dir, "parallelogram_vn.obj");
-    mgl::Mesh* sTriangle1Mesh = getMesh(dir, "small_triangle_1_vn.obj");
-    mgl::Mesh* sTriangle2Mesh = getMesh(dir, "small_triangle_2_vn.obj");
-    mgl::Mesh* mTriangleMesh = getMesh(dir, "medium_triangle_vn.obj");
-    mgl::Mesh* lTriangleMesh = getMesh(dir, "large_triangle_vn.obj");
 
     // Note: only enviroment has shaders. When draw is called on each piece, they will obtain their parent node's shaders
     // in this case their parent is puzzle, which will then obtain the shaders of its parent, which is enviroment
 
-    enviroment = new SceneNode(enviromentMesh, glm::vec4((25.0 / 255), (25.0 / 255), (25.0 / 255), 1.0f), Shaders);
+    enviroment = new SceneNode(getMesh(dir, "enviroment_vn.obj"), glm::vec4((25.0 / 255), (25.0 / 255), (25.0 / 255), 1.0f), Shaders);
     puzzle = new SceneNode();
-    square = new SceneNode(squareMesh, glm::vec4((34.0 / 255), (171.0 / 255), (36.0 / 255), 1.0f));
-    parallelogram = new SceneNode(parallelogramMesh, glm::vec4((230.0 / 255), (140.0 / 255), (25.0 / 255), 1.0f));
-    sTriangle1 = new SceneNode(sTriangle1Mesh, glm::vec4((230.0 / 255), (71.0 / 255), (38.0 / 255), 1.0f));
-    sTriangle2 = new SceneNode(sTriangle2Mesh, glm::vec4((25.0 / 255), (158.0 / 255), (166.0 / 255), 1.0f));
-    mTriangle = new SceneNode(mTriangleMesh, glm::vec4((109.0 / 255), (59.0 / 255), (191.0 / 255), 1.0f));
-    lTriangle1 = new SceneNode(lTriangleMesh, glm::vec4((25.0 / 255), (130.0 / 255), (242.0 / 255), 1.0f));
-    lTriangle2 = new SceneNode(lTriangleMesh, glm::vec4((205.0 / 255), (25.0 / 255), (102.0 / 255), 1.0f));
+    square = new SceneNode(getMesh(dir, "square_vn.obj"), glm::vec4((34.0 / 255), (171.0 / 255), (36.0 / 255), 1.0f));
+    parallelogram = new SceneNode(getMesh(dir, "parallelogram_vn.obj"), glm::vec4((230.0 / 255), (140.0 / 255), (25.0 / 255), 1.0f));
+    sTriangle1 = new SceneNode(getMesh(dir, "small_triangle_1_vn.obj"), glm::vec4((230.0 / 255), (71.0 / 255), (38.0 / 255), 1.0f));
+    sTriangle2 = new SceneNode(getMesh(dir, "small_triangle_2_vn.obj"), glm::vec4((25.0 / 255), (158.0 / 255), (166.0 / 255), 1.0f));
+    mTriangle = new SceneNode(getMesh(dir, "medium_triangle_vn.obj"), glm::vec4((109.0 / 255), (59.0 / 255), (191.0 / 255), 1.0f));
+    lTriangle1 = new SceneNode(getMesh(dir, "large_triangle_vn.obj"), glm::vec4((25.0 / 255), (130.0 / 255), (242.0 / 255), 1.0f));
+    lTriangle2 = new SceneNode(getMesh(dir, "large_triangle_vn.obj"), glm::vec4((205.0 / 255), (25.0 / 255), (102.0 / 255), 1.0f));
 
     enviroment->addChild(puzzle);
     puzzle->addChild(square);
@@ -224,8 +217,6 @@ void MyApp::setCurrentPositions(double elapsed) {
 }
 
 ////////////////////////////////////////////////////////////////////////// SCENE
-
-const glm::mat4 ModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f)) * glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, -0.5f, -0.5f));
 
 void MyApp::drawScene(double elapsed) {
     cameras[currCamera]->updateView();
