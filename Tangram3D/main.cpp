@@ -196,7 +196,6 @@ void MyApp::setCurrentPositions(double elapsed) {
         else {
             deltaT = std::max(0.0, deltaT - elapsed);
         }
-        std::cout << deltaT << std::endl;
     }
 
     square->setModelMatrix(glm::interpolate(squarePosStart * squareAngleStart, squarePosEnd * squareAngleEnd, (float)deltaT));
@@ -218,7 +217,7 @@ void MyApp::setCurrentPositions(double elapsed) {
     // Calculate translation of the environment
     environmentPos += -cameras[currCamera]->getSideVector() * worldHorizontalDelta + cameras[currCamera]->getViewVector() * worldVerticalDelta;
     glm::mat4 T = glm::translate(glm::mat4(1.0f), environmentPos);
-    enviroment->setWorldMatrix(T);
+    enviroment->setModelMatrix(T);
 
     worldHorizontalDelta = 0.0f;
     worldVerticalDelta = 0.0f;
